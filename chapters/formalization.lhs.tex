@@ -1,0 +1,848 @@
+%% ODER: format ==         = "\mathrel{==}"
+%% ODER: format /=         = "\neq "
+%
+%
+\makeatletter
+\@ifundefined{lhs2tex.lhs2tex.sty.read}%
+  {\@namedef{lhs2tex.lhs2tex.sty.read}{}%
+   \newcommand\SkipToFmtEnd{}%
+   \newcommand\EndFmtInput{}%
+   \long\def\SkipToFmtEnd#1\EndFmtInput{}%
+  }\SkipToFmtEnd
+
+\newcommand\ReadOnlyOnce[1]{\@ifundefined{#1}{\@namedef{#1}{}}\SkipToFmtEnd}
+\DeclareFontFamily{OT1}{cmtex}{}
+\DeclareFontShape{OT1}{cmtex}{m}{n}
+  {<5><6><7><8>cmtex8
+   <9>cmtex9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmtex10}{}
+\DeclareFontShape{OT1}{cmtex}{m}{it}
+  {<-> ssub * cmtt/m/it}{}
+\newcommand{\texfamily}{\fontfamily{cmtex}\selectfont}
+\DeclareFontShape{OT1}{cmtt}{bx}{n}
+  {<5><6><7><8>cmtt8
+   <9>cmbtt9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmbtt10}{}
+\DeclareFontShape{OT1}{cmtex}{bx}{n}
+  {<-> ssub * cmtt/bx/n}{}
+\newcommand{\tex}[1]{\text{\texfamily#1}}	% NEU
+
+\newcommand{\Sp}{\hskip.33334em\relax}
+
+
+\newcommand{\Conid}[1]{\mathit{#1}}
+\newcommand{\Varid}[1]{\mathit{#1}}
+\newcommand{\anonymous}{\kern0.06em \vbox{\hrule\@width.5em}}
+\newcommand{\plus}{\mathbin{+\!\!\!+}}
+\newcommand{\bind}{\mathbin{>\!\!\!>\mkern-6.7mu=}}
+\newcommand{\rbind}{\mathbin{=\mkern-6.7mu<\!\!\!<}}% suggested by Neil Mitchell
+\newcommand{\sequ}{\mathbin{>\!\!\!>}}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+%mathindent has to be defined
+\@ifundefined{mathindent}%
+  {\newdimen\mathindent\mathindent\leftmargini}%
+  {}%
+
+\def\resethooks{%
+  \global\let\SaveRestoreHook\empty
+  \global\let\ColumnHook\empty}
+\newcommand*{\savecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\savecolumns[#1]}}
+\newcommand*{\restorecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\restorecolumns[#1]}}
+\newcommand*{\aligncolumn}[2]%
+  {\g@addto@macro\ColumnHook{\column{#1}{#2}}}
+
+\resethooks
+
+\newcommand{\onelinecommentchars}{\quad-{}- }
+\newcommand{\commentbeginchars}{\enskip\{-}
+\newcommand{\commentendchars}{-\}\enskip}
+
+\newcommand{\visiblecomments}{%
+  \let\onelinecomment=\onelinecommentchars
+  \let\commentbegin=\commentbeginchars
+  \let\commentend=\commentendchars}
+
+\newcommand{\invisiblecomments}{%
+  \let\onelinecomment=\empty
+  \let\commentbegin=\empty
+  \let\commentend=\empty}
+
+\visiblecomments
+
+\newlength{\blanklineskip}
+\setlength{\blanklineskip}{0.66084ex}
+
+\newcommand{\hsindent}[1]{\quad}% default is fixed indentation
+\let\hspre\empty
+\let\hspost\empty
+\newcommand{\NB}{\textbf{NB}}
+\newcommand{\Todo}[1]{$\langle$\textbf{To do:}~#1$\rangle$}
+
+\EndFmtInput
+\makeatother
+%
+%
+%
+%
+%
+%
+% This package provides two environments suitable to take the place
+% of hscode, called "plainhscode" and "arrayhscode". 
+%
+% The plain environment surrounds each code block by vertical space,
+% and it uses \abovedisplayskip and \belowdisplayskip to get spacing
+% similar to formulas. Note that if these dimensions are changed,
+% the spacing around displayed math formulas changes as well.
+% All code is indented using \leftskip.
+%
+% Changed 19.08.2004 to reflect changes in colorcode. Should work with
+% CodeGroup.sty.
+%
+\ReadOnlyOnce{polycode.fmt}%
+\makeatletter
+
+\newcommand{\hsnewpar}[1]%
+  {{\parskip=0pt\parindent=0pt\par\vskip #1\noindent}}
+
+% can be used, for instance, to redefine the code size, by setting the
+% command to \small or something alike
+\newcommand{\hscodestyle}{}
+
+% The command \sethscode can be used to switch the code formatting
+% behaviour by mapping the hscode environment in the subst directive
+% to a new LaTeX environment.
+
+\newcommand{\sethscode}[1]%
+  {\expandafter\let\expandafter\hscode\csname #1\endcsname
+   \expandafter\let\expandafter\endhscode\csname end#1\endcsname}
+
+% "compatibility" mode restores the non-polycode.fmt layout.
+
+\newenvironment{compathscode}%
+  {\par\noindent
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed\)%
+   \par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\compaths}{\sethscode{compathscode}}
+
+% "plain" mode is the proposed default.
+% It should now work with \centering.
+% This required some changes. The old version
+% is still available for reference as oldplainhscode.
+
+\newenvironment{plainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newenvironment{oldplainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+% Here, we make plainhscode the default environment.
+
+\newcommand{\plainhs}{\sethscode{plainhscode}}
+\newcommand{\oldplainhs}{\sethscode{oldplainhscode}}
+\plainhs
+
+% The arrayhscode is like plain, but makes use of polytable's
+% parray environment which disallows page breaks in code blocks.
+
+\newenvironment{arrayhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\parray}%
+  {\endparray\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newcommand{\arrayhs}{\sethscode{arrayhscode}}
+
+% The mathhscode environment also makes use of polytable's parray 
+% environment. It is supposed to be used only inside math mode 
+% (I used it to typeset the type rules in my thesis).
+
+\newenvironment{mathhscode}%
+  {\parray}{\endparray}
+
+\newcommand{\mathhs}{\sethscode{mathhscode}}
+
+% texths is similar to mathhs, but works in text mode.
+
+\newenvironment{texthscode}%
+  {\(\parray}{\endparray\)}
+
+\newcommand{\texths}{\sethscode{texthscode}}
+
+% The framed environment places code in a framed box.
+
+\def\codeframewidth{\arrayrulewidth}
+
+\newenvironment{framedhscode}%
+  {\parskip=\abovedisplayskip\par\noindent
+   \hscodestyle
+   \arrayrulewidth=\codeframewidth
+   \tabular{@{}|p{\linewidth-2\arraycolsep-2\arrayrulewidth-2pt}|@{}}%
+   \hline\framedhslinecorrect\\{-1.5ex}%
+   \let\endoflinesave=\\
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \framedhslinecorrect\endoflinesave{.5ex}\hline
+   \endtabular
+   \parskip=\belowdisplayskip\par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\framedhslinecorrect}[2]%
+  {#1[#2]}
+
+\newcommand{\framedhs}{\sethscode{framedhscode}}
+
+% The inlinehscode environment is an experimental environment
+% that can be used to typeset displayed code inline.
+
+\newenvironment{inlinehscode}%
+  {\(\def\column##1##2{}%
+   \let\>\undefined\let\<\undefined\let\\\undefined
+   \newcommand\>[1][]{}\newcommand\<[1][]{}\newcommand\\[1][]{}%
+   \def\fromto##1##2##3{##3}%
+   \def\nextline{}}{\) }%
+
+\newcommand{\inlinehs}{\sethscode{inlinehscode}}
+
+% The joincode environment is a separate environment that
+% can be used to surround and thereby connect multiple code
+% blocks.
+
+\newenvironment{joincode}%
+  {\let\orighscode=\hscode
+   \let\origendhscode=\endhscode
+   \def\endhscode{\def\hscode{\endgroup\def\@currenvir{hscode}\\}\begingroup}
+   %\let\SaveRestoreHook=\empty
+   %\let\ColumnHook=\empty
+   %\let\resethooks=\empty
+   \orighscode\def\hscode{\endgroup\def\@currenvir{hscode}}}%
+  {\origendhscode
+   \global\let\hscode=\orighscode
+   \global\let\endhscode=\origendhscode}%
+
+\makeatother
+\EndFmtInput
+%
+
+%\chapter{Semantics of Time}
+%In this chapter we will introduce a type-system based on constraint based typing as introduced in the previous chapter.
+%While we will re-introduce basic notation used in defining our typing rules, we will not explain the workings of constraint based typing, the $\lambda$-calculus and type-systems in general in this chapter.
+%If these concepts are unfamiliar, the previous chapter may be used as an introduction. 
+%
+%Our type-system will use constraints to limit the temporal behaviour of hardware descriptions.
+%Whether or not this can be rightfully called a type-system is open for discussion.
+%In this thesis however we consider temporal constraints as a type-system, as the purpose of other type-systems and our temporal constraints are similar.
+%Moreover, when timing behaviour is subject to constraints we can reason about circuit descriptions together with their temporal limitations.
+%Like types, temporal constraints express a limitation on expressions.
+%In that light we consider our system a type-system.
+%However, even though our type-system is similar to constraint-based typing we will not discuss a combination of the two until after introducing our system. 
+%As such, certain identifiers, as introduced in the previous chapter, may be reused whenever they describe similar things. 
+%
+%To introduce our type-system we will first give a general introduction as to what is currently possible using a system like the simply typed $\lambda$-calculus.\todo{update}
+%After doing so we discuss in what ways time can be constrained in expressions of hardware description.
+%As introduced in the previous chapter we will use the framework\cite{lee1998framework} developed by \citeauthor{lee1998framework} to give a informal explanation of our model of time and how we can create timing constraints.
+%Following this informal understanding of our model of time we will extend the grammar of the constraint based $\lambda$-calculus and provide typing rules which express the relation between types and terms.
+%Afterwards we will define what it means for a term to be well-typed, together with a method to prove the time constraints hold.
+%
+%\section{Introduction}
+%Even though the untyped $\lambda$-calculus can be used as a foundation to elegantly express computations, as shown by programming languages such as Haskell\cite{jones2003haskell} and Lisp\cite{mccarthy1965lisp}, the untyped $\lambda$-calculus by itself is not suited as a method to reason about the physical constraints which these computations may be subject to.
+%When describing hardware we do not want to limit ourselves to expressing only computations, but we also want to express when, where and how these computations are executed.
+%To allow accurate reasoning about the behavior of a circuit description we must be able to express all of these constraints accurately and in an intuitive manner.
+%Without being able to do so the complexity of the system soon catches up with our ability to express interactions and all added advantages of expressing temporal behavior are surely lost.
+%
+%The simply typed $\lambda$-calculus is able to more specifically limit computations.
+%However, we are still not able to specify when these computations occur, nor where these computations occur.
+%For hardware description the simply typed $\lambda$-calculus is, expressive enough to specify the following:
+%\begin{itemize}
+% \item Data representation in terms of bits, provided base types are created for every type of data.
+% \item Hierarchically organise computations through abstraction and application.
+%\end{itemize}
+%
+%Additionally, \citeauthor{clashchris} and \citeauthor{kooijman2009haskell} have explored\cite{clashchris,kooijman2009haskell} ways to translate a dialect of the $\lambda$-calculus to \gls{vhdl}.
+%Their approach exposes parallelism from the Haskell Core language and is essential in generating hardware from a hardware description which uses the $\lambda$-calculus.
+%As such we can conclude that the simply typed $\lambda$-calculus can express parallelism implicitly.
+%Their approach also shows $\beta$-reduction is preserved during translation to \gls{vhdl}, which represents the computational aspect of the $\lambda$-calculus.
+%
+%What is not possible is to specify when and where these computations take place.
+%We can easily abstract from the latter, as synthesis tools are sufficiently advanced to make manual placement, at least in the general case, unnecessary, but we cannot specify directly when these computations take place.
+%Furthermore, if we are able to specify when computations take place then we would also like to have a certain degree of verification when creating compositions of computations. 
+%For this reason we will introduce a modified version of constraint-based type-checking.
+%We will allow a hardware designer to define components independently and then, through composition and primitive, temporal operations, allow the type-system to verify whether the composition still behaves correctly.
+%Before doing so however we need a sense of time, which we will present in the next section.
+%
+%
+%%%%%
+%% Time Representation
+%%%%%
+%\section{Time Representation}
+%As mentioned in the previous chapter, the synchronous approach is used most commonly for hardware description.
+%Since this is the case, and since \gls{clash} is already considered a synchronous language, we limit ourselves to the synchronous approach here.
+%To introduce the concept of timing constraints we first limit ourselves to combinational logic and general observations while ignoring the details of the synchronous approach first, before introducing memory elements and differences in sample speeds.
+%
+%\begin{figure}[h]
+%\begin{minipage}{0.45\textwidth}
+%\centering
+%\includegraphics[width=\textwidth]{images/comp}
+%\end{minipage}
+%\begin{minipage}{0.45\textwidth}
+%\centering
+%\includegraphics[width=0.8\textwidth]{images/constraintsingle}
+%\end{minipage}
+%\caption{A single component together with its time variables} \label{fig:singlecomp}
+%\end{figure}
+%
+%First, in order to be able to reason about time we introduce the concept of a \textit{time variable}. 
+%Time variables represent moments in time which do not change within the scope of expressions where they are used in; within a single scope time variables are constants.
+%This is similar to mathematical variables, such as in $f(x) = x^2$, where $x$ is considered a constant \textit{within} the scope of $f$.
+%We will use $\psi$ to range over time variables.
+%When we define a certain component $C$, as shown in figure \ref{fig:singlecomp}, every input and output of the component is associated with a distinct time variable.
+%Without looking at the component definition we can deduce, in order to maintain causality, that $\psi_0$ must precede $\psi_1$ in time, or must occur at exactly the same time as $\psi_0$.
+%
+%When we limit ourselves to combinational logic the time difference between $\psi_0$ and $\psi_1$ represents the length of the critical path in $C$.
+%We can express the relation between $\psi_0$ and $\psi_1$ through a timing diagram, shown in figure \ref{fig:singlecomp}
+%The time variable $\psi_0$ depends on the input provided to this component.
+%When we soley consider this component we do not know when the input is actually available.
+%This is represented as the black arrow in the timing diagram, which represents all moments in time which $\psi_0$ can represent.
+%When solely considering $C$, $\psi_0$ is unrestricted and as a result we can pick \textit{any} point in time and replace $\psi_0$ with it.
+%This influences the possible position in time of $\psi_1$ however, as $\psi_1$ depends on $\psi_0$. 
+%To express this we pick a specific instance of $\psi_0$, indicated by the small circle on the black arrow labelled $\psi_0$.
+%The time variable $\psi_1$ depends on $\psi_0$, which is expressed as the dotted line between the start of all possible positions of $\psi_1$.
+%When we know nothing of $C$ the critical path is variable, as it depends on the definition of $C$. 
+%We express this as the difference in time between $\psi_0$ and $\psi_1$ by also picking a specific instance for $\psi_1$.
+%Since we are limiting ourselves to combinational logic, $\psi_0$ must occur within the same clock-cycle as $\psi_1$, which is represented by the dotted line between the endpoints of both arrows.
+%Timing diagrams such as these can be used to reason about temporal effects under changing conditions.
+%We can imagine moving the instance of $\psi_0$ horizontally and imagine the effects it has on $\psi_1$.
+%
+%While timing diagrams are useful, they are not suited to concisely represent temporal constraints.
+%To do so we can create relations between time variables symbolically. 
+%For instance, the relation as shown in figure \ref{fig:singlecomp} can be expressed as $\psi_0 \le \psi_1$.
+%
+%%
+%% Time variables and Relations
+%%
+%\begin{definitiontitled}[text only,float]{Time variables and Relations}{def:timevar}
+%A \textbf{time variable}, denoted $\psi_0 \ldots, \psi_n$, represents a moment in time.
+%Two time variables may be related to each other in the sense that one must always precede the other, or occur at exactly the same time.
+%\end{definitiontitled}
+%
+%
+%We can use relations such as $\psi_0 \le \psi_1$ to define a mapping to hardware, as shown by figure \ref{fig:constraintsinglemap}, where a single component can be used to handle input streams, without directly using streams in its definition.
+%When we take the natural numbers, including 0, as representing time instances, then we can replace $\psi_0$ with any $n \in \mathbb{N}_0$, as shown in the timing diagram.
+%Moreover, since we know nothing of $\psi_1$ in relation to $\psi_0$ other than the latter must precede the former, we can replace $\psi_1$ with any $n \in \mathbb{N}_0$ provided $\psi_0 \le \psi_1$. 
+%Using these relations we can map a component over time, as shown by figure \ref{fig:constraintsinglemap}.
+%The time between $\psi_0=n$ and $\psi_0=n+1$ determines the length of a single period.
+%We have indicated this in the diagram by transparent arrows between $\psi_1 = 0$ and $\psi_1 = 1$.
+%The length of time between these indicates the length of a single clock-cycle in a synchronous circuit.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{images/constraintsinglemap}
+%\caption{A mapping of a component's time behaviour to a stream} 
+%\label{fig:constraintsinglemap}
+%\end{figure}
+%
+%\subsection{Timing Constraints}
+%Relations between two time variables, such as $\psi_0 \le \psi_1$, are called timing constraints. 
+%These can be deduced automatically when two components are composed.
+%Shown in figure \ref{fig:dualcomp} are two components, each with their own time variables.
+%When we compose the two we can deduce that $\psi_0 \le \psi_1$, $\psi_1 \le \psi_2$ and $\psi_2 \le \psi_3$.
+%However, we have mentioned before that we limit ourselves to combinational logic as well as the synchronous approach.
+%Based on those two assumptions we could be more strict in the sense that $\psi_0 = \psi_1 = \psi_2 = \psi_3$.
+%When we introduce sequential logic we can no longer assume every component consists of combinational logic however, and as such we do not make any such assumption here either.
+%When we want to indicate however that a component \textit{does} in fact consist solely combinational logic we will use the same time variable for all inputs and all outputs, as shown in figure \ref{fig:constraints1circuit}.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.65\textwidth]{images/compcomp}
+%\caption{Two components composed together with their time variables} \label{fig:dualcomp}
+%\end{figure}
+%
+%Timing constraints are created using the $\le$ operator, which does not define \textit{exactly} when moments occur in relation to each other, but only introduces an ordering of computations in time.
+%To clarify this concept we will introduce a small sub-component of a circuit in figure \ref{fig:constraints1circuit}.
+%Each of these components $C_0 \ldots C_2$ represent combinational logic, and as such each component has its own associated timing variables $\psi_0 \ldots \psi_2$.
+%For demonstrative purposes we will ignore the inputs and outputs of this circuit.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.65\textwidth]{images/constraints1circuit}
+%\caption{Foo bar}
+%\label{fig:constraints1circuit}
+%\end{figure}
+%
+%To model the difference between distinct clockcycles, whenever a moment in time labelled $\psi$ occurs, $\psi + a$ with $a \neq 0$ can not occur.
+%The constant $a$ represents the phase difference of $\psi$ when compared to $\psi+a$.
+%As a result, when using combinational logic which is supplied with data at $\psi$, we can never observe data for any moment $a \neq 0$ in $\psi + a$.
+%This effect is made visible in figure \ref{fig:constraints1} by adding $\psi_0 + 1$ as an upper bound for possible positions of $\psi_0$ relative to other time variables.
+%Similarly, $\psi_0 - 1$ is a lower bound.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.65\textwidth]{images/constraints1}
+%\caption{Foobar}
+%\label{fig:constraints1}
+%\end{figure}
+%
+%In this timing diagram we started by defining the moment $\psi_0$.
+%Like earlier, this time variable is unrestricted.
+%Since $C_2$ depends on $C_0$ this means that $\psi_2$ may never precede $\psi_0$, as indicated by the dotted line between $\psi_0$ and the start of all possible positions of $\psi_2$.
+%As all components consists only of combinational logic this means that it restricts both $\psi_0$, $\psi_1$ and $\psi_2$ to be available within the same clockcycle.
+%This is illustrated by the gray rectangle in figure \ref{fig:constraints1}.
+%Alternatively we can illustrate this via the constraint $\psi_2 \le \psi_0 + 1$, as well as the constraints $\psi_0 \le \psi_2$ and $\psi_1 \le \psi_0 + 1$. 
+%The constraint $\psi_0 \le \psi_0 + 1$ always holds, since $\psi_0 < \psi_0 + 1$ is axiomatically true.
+%
+%The restriction of time variables by composition shows how behaviour in time depends on the context in which a component is used.
+%For instance, if we were to use this composition in another composition where $\psi_2 \le \psi_0$, then clearly $\psi_2 = \psi_0$. 
+%This does not matter greatly yet, since we limited ourselves to combinational logic.
+%If the most restricting timing constraint is equality, then combinational logic can always be expressed.
+%However, if we were to express sequential logic, then we can use constraints such as these to check if compositions behave sanely.
+%To do so however, we will need to introduce memory elements and the timing model of sequential logic.
+%
+%%The timing constraints we introduced are very familiar to the typing constraints from the previous chapter.
+%%There, we introduced a set of typing constraints of the form $\tau = \sigma$, where $\tau$ and $\sigma$ represent types.
+%%Similarly we also introduce a set of timing constraints in definition \ref{def:constraintpsi1}.
+%%We use the already introduced time expression $\tau$ in our constraints, as each time expression consists of at least one time variable $\psi$ and can therefor express the constraints.
+%%
+%%\begin{definitiontitled}[text only,float]{Set of constraints $\mathcal{C}$}{def:constraintpsi1}
+%%Let $\tau$ and $\sigma$ be time expressions with associated variables $\psi_\tau$ and $\psi_\sigma$ and offsets $a$, $b$, then the $i^{th}$ \textbf{time-constraint} $\mathcal{C}_i$ is defined as an element of the set $\mathcal{C}$ as follows:
+%%\[
+%%\mathcal{C}   = \{\mathcal{C}_i | i \in 1..n\} \quad \\
+%%\mathcal{C}_i = \tau \le \sigma 
+%%\]
+%%, where $\le$ is the non-strict ordering relation between $\tau = \psi_\tau + a$ and $\sigma = \psi_\sigma + b$.
+%%\end{definitiontitled}
+%
+%%To avoid confusion over the previous sections and the next section we do allow relations as $\psi_0 \le \psi_1$.
+%%Whenever time variables themselves are used in inequality relations they can be converted to a time constraint by defining $\tau = \psi_0$ and $\sigma = \psi_1$.
+%%
+%
+%\subsection{Lifetime}
+%Since we have defined upper and lower bounds to time variables, like in figure \ref{fig:constraints1}, we have also defined an interval of time where a value exists.
+%The interval of time during which a value is valid is called the \textit{lifetime} of a value.
+%We can determine the difference in lifetime between two values if the \textit{rate of change} is known.
+%For now we will only consider a constant rate of change, which means we can relate this rate of change to a single clock.
+%In synchronous hardware description a clock is used to indicate the passage of time.
+%Using this clock we can define the minimum lifetime of a value, as it is at least equal to one period of the clock. 
+%The rate of change of the clock is twice as fast as the values which are synchronised to it, as a clock alternates between two distinct states.
+%
+%When we relate a changing value to a clock then we can also define when a value changes.
+%Figure \ref{fig:lifetime} shows how the length of the clock, labelled \textit{clk}, can change depending on when an abstract moment in time, labelled $\psi_0$, occurs.
+%Not only does it depend on $\psi_0$, but also on another moment which we label $\psi_0 + 1$.
+%This time variable is phase shifted in comparison to $\psi_0$. 
+%The length of time between $\psi_0$ and $\psi_0+1$ is, for the purposes of discussing lifetime at least, completely variable. 
+%We can choose $\psi_0$ and as a result the rate of change of the value associated with $\psi_0$ is increased.
+%
+%\begin{figure}[h]
+%\includegraphics[width=0.8\textwidth]{images/lifetime}
+%\centering
+%\caption{A single component together with its time variables} \label{fig:lifetime}
+%\end{figure}
+%
+%For realistic circuits the limitation of a fixed rate of change might seem overly restrictive, as hardware description languages generally have the ability to up or downsample a signal, but for now we will focus on immutable rates of change.
+%When we know the minimum lifetime of values we can also, in principle at least, determine when components are used, and how compositions of components \textit{should} be used in order to maintain $\beta$-reduction.
+%This may seem like a tall order, but before we can show meaningful examples we first introduce memory elements.
+%
+%\subsection{Memory Elements}
+%We can also use the lifetime of values to reason about memory elements.
+%Memory elements can be seen as bridges between time instances.
+%Figure \ref{fig:dff} shows a D flip-flop, which is trigged by a periodic clock or a set/reset toggle, together with a timing diagram.
+%The data input, labelled D, is available at $\psi$.
+%Since a D flip-flop is triggered by a periodic clock, named clk, whenever data is supplied to the input at $\psi$, the same data will be available at the output Q precisely at $\psi+1$, which is the next clock cycle of the associated clock $clk$.
+%We can express this memory element through the addition operation, as shown by figure \ref{fig:dff}.
+%When we add an offset to a time variable we specify how many memory elements should be inserted.
+%When we pick $\psi = 0$ first, then in the example diagram $D$ will have the value $42$. 
+%The value of $Q$ will be the same as $D$, only one moment in time later, namely when $\psi=1$.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.7\textwidth]{images/dff}
+%\caption{Two components composed together with their time variables} \label{fig:dff}
+%\end{figure}
+%
+%As shown by the D flip-flop, we use the same time variable for both the input as the output.
+%This is the only way how memory elements can be introduced through time variables.
+%Time variables refer to a fixed rate of change, which means each time variable has an associated lifetime.
+%Since we reference the same time variable for both the input and output of the memory element we also bind the lifetime of the input value to the lifetime of the output value. 
+%This makes sense in hardware since changes in the memory element are toggled by a single clock.
+%This single clock also relates the input to the output in the sense that the output is always produced one cycle after the input, and as such exists one time unit later.
+%
+%\subsubsection{Time Expressions}
+%So far we have only dealt with time variables $\psi$.
+%Similar to the relation between type variables and types, we introduce \textit{time expressions} in definition \ref{def:timeexpr1}.
+%Unlike the relation between type variables and types, time expressions \textit{always} contain time variables. 
+%An operation such as $+$ could be seen as a time expression constructor, similar to how $\rightarrow$ is a type constructor.
+%
+%\begin{definitiontitled}[text only,float]{Time Expression (1)}{def:timeexpr1}
+%This is indicated by the arrow, which indicates the interval from which we may choose $\psi_0$.
+%We allow operations, such as addition on time variables leading to \textbf{time expressions}.
+%Like types, we use $\tau, \sigma, \rho$ to range over time expressions.
+%Addition of a constant offset to a time variable as in $\psi + a$, is defined as expressing the time expression $\tau= \psi + a$, where $\psi + a$ can always be replaced by $\tau$ and vice versa.
+%\end{definitiontitled}
+%
+%Time expressions allow us to move memory elements around without affecting the behaviour of the circuit.
+%Since we have not defined the initial content of memory elements we can still move memory elements indescriminately; the circuit is subject to \textit{retiming}.
+%As an example we define an adder component as in figure \ref{fig:timedadder}, with the constraints $\psi_0 \le \psi_2$ and $\psi_1 \le \psi_2$.
+%
+%\begin{figure}[ht]
+%\begin{minipage}[b]{0.375\linewidth}
+%\centering
+%\includegraphics[width=0.9\textwidth]{images/adder}
+%\caption{A timed adder with the constraints $(\psi_0,\psi_1) \le \psi_2$}
+%\label{fig:timedadder}
+%\end{minipage}
+%\hspace{0.5cm}
+%\begin{minipage}[b]{0.625\linewidth}
+%\centering
+%\includegraphics[width=0.9\textwidth]{images/addermemory}
+%\caption{A timed adder with the addition constraint $\psi_0 \le \psi_1 + 1$}
+%\label{fig:timedaddermemory}
+%\end{minipage}
+%\end{figure}
+%
+%As the rate of change in the environment is fixed, we know that whenever $\psi_0$ changes, $\psi_1$ must also change.
+%When we introduce the additional constraint $\psi_0 \le \psi_1 + 1$, then in order for the addition operation to work properly the input labelled $\psi_0$ must be delayed \textit{somewhere} before being supplied to the addition operation.
+%How the constraint $\psi_0 \le \psi_1 + 1$ is created in the environment is of no concern, as long as the constraint is taken care of at some point.
+%
+%%%%%
+%% Functions as values
+%%%%%
+%\subsection{Functions as Values}
+%Since we are using the functional paradigm functions are values as well.
+%To reason about functions we first define what time variables are in the context of functions.
+%To do so we need to clarify part of the type-system of $\lambda^\rightarrow$ however.
+%
+%We take the addition function as an example.
+%Restricting ourselves to integer inputs the type of $f$ would be $Int \rightarrow (Int \rightarrow Int)$.
+%This means that $f$, when applied to the first argument, will produce a new function $f'$, which has type $Int \rightarrow Int$.
+%As functions are values we can also annotate these with time variables.
+%Let $C$ be the component representation of $f$, then $C$ ``produces'' a second component $C'$ which is able to be applied to another argument as shown by figure \ref{fig:2arycomp}.
+%The input of $C$ arrives at $\psi_0$, then the component $C'$ is instantly produced at $\psi_1$.
+%The component $C'$ can then use an input $\psi_1$, which is \textit{unrelated} to $\psi_0$.
+%Finally, $C'$ will produce a value, which will be available at $\psi_2$ under consideration that $\psi_0 \le \psi_2$ and $\psi_1 \le \psi_0$.
+%As a result, function values do not have to behave causally.
+%When the second argument in our example, labelled $\psi_1$, arrives earlier than $\psi_0$, then the function is moved backwards in time.
+%This is of no concern, as functions can not be considered \textit{real} values anyway; we can never move a function over a wire.
+%
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.8\textwidth]{images/2arycomp}
+%\caption{Two components composed together with their time variables} \label{fig:2arycomp}
+%\end{figure}
+%
+%The relation between functions and hardware components is somewhat difficult, as the components the functions represent necessarily exist in continuous time.
+%However, we are not interested in the results of functions at \textit{every} continuous time instance, we are merely interested in results of functions at \textit{specific} time instances.
+%As such we are not interested in function definitions at every time instance either, as long as they are well behaved at the time instances at which we expect it to be well-behaved.
+%With this in mind we can consider functions as values, even in the domain of hardware, provided functions themselves are not subject to the same restrictions as real values.
+%The components which represent functions do exist, yet the functionality they represent is only known to be correct at specific instances. 
+%At other moments in time the functionality may also be correct, but from a language point of view we make no assumptions on whether or not this should be the case.
+%
+%%%%%
+%% Context and Composition
+%%%%%
+%\subsection{Context and Composition}
+%As mentioned earlier, whenever we use application to compose values we make an assumption on the validity of the values we are composing, independent of the rest of the circuit definition.
+%This does not mean we cannot define functions where two abstract events are not related, as shown by figure \ref{fig:indepcomp}.
+%There we show two components $C_1$ and $C_2$, each with independent time variables.
+%Referring only to the composition of these two components we cannot see how $\psi_0$ and $\psi_2$ relate.
+%However, as we do not allow upsampling and downsampling yet, we are able to determine the relative offsets between $\psi_0$ and $\psi_2$ using the context in which the component is used.
+%As a result, we are able to define the behaviour of both $C_1$ and $C_2$ in relation to eachother.
+%
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.5\textwidth]{images/indepcomp}
+%\caption{Two independent components in a single composition.} \label{fig:indepcomp}
+%\end{figure}
+%
+%While we cannot say anything about $C_1$'s relation to $C_2$, we can certainly say that such a relation must exist somewhere in the context where the composition $C$ is used in.
+%
+%%%%%
+%% Flexible and Strict constraints
+%%%%%
+%\subsection{Flexible and Strict Constraints}
+%So far we have not properly defined how constraints can be interpreted.
+%We can define at least two ways in which we can interpret constraints. 
+%Later on we will define a few other ways in which we could interpret constraints, but for now we will focus on \textit{strict} and \textit{flexible} constraints.
+%First we will define flexible constraints through an example, after which we will introduce a way to create strict constraints.
+%
+%\subsubsection{Flexible Constraints}
+%Shown in figure \ref{fig:bigcomp} is a composition with components $C_0 \ldots C_3$ and associated time variables $\psi_0 \ldots \psi_4$.
+%From the time variables we can assume that $C_2$ is combinational, as it is only associated with a single time variable.
+%
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{images/bigcomp}
+%\caption{Two components composed together with their time variables} \label{fig:bigcomp}
+%\end{figure}
+%
+%
+%By itself this does not have any effect on the composition.
+%However, this changes when we add the constraint $\psi_0 \le \psi_1 + 1$, which indicates that somewhere between the input of $C_0$ and the output labelled $\psi_1$ a memory element needs to be added \textit{without} affecting the other output labelled $\psi_0$.
+%To clarify this we added a timing diagram, shown in figure \ref{fig:bigcomptiming}, which shows how the additional constraint relates time variables $\psi_0 \ldots \psi_4$ to each other.
+%When we do not yet know anything about $C_1$, $\psi_2$ and $\psi_3$ are limited by $\psi_0$ and $\psi_4$.
+%If we assume $C_1$ only contains combinational logic, then $\psi_2$ and $\psi_3$ have to occur during the lifetime of $\psi_0$, in turn solely limiting $\psi_2$ and $\psi_3$ by $\psi_0$.
+%
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.65\textwidth]{images/bigcomptiming}
+%\caption{Two components composed together with their time variables} \label{fig:bigcomptiming}
+%\end{figure}
+%
+%
+%We have rewritten the composition of figure \ref{fig:bigcomp} to include a memory element, as shown in figure \ref{fig:bigcomprewritten}.
+%To maintain the functionality described by $C_2$, which defines both inputs to be available at the same time, a memory element between $C_2$ and $C_0$ along the path of $C_1$ must be present.
+%To do so we may insert memory elements where we need to, as all other relations are flexible: $\psi_0 \le \psi_2 \le \psi_3$ et cetera.
+%However, $C_1$ may also include a memory element already, in which case we do not have to add memory elements anywhere in the composition.
+%What is important is that $C_2$ is defined to be completely combinational.
+%Whenever we compose it with other components we have the choice to implicitly add a memory element in order to maintain the behaviour within $C_2$.
+%Assuming this is the case, then the composition needs to be changed to maintain the functionality described in $C_2$.
+%This means that the environment which $C_2$ is used in is responsible to provide synchronized inputs, regardless of the computational paths leading up to the inputs of $C_2$.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.75\textwidth]{images/bigcomprewritten}
+%\caption{Two components composed together with their time variables} \label{fig:bigcomprewritten}
+%\end{figure}
+%
+%Alternatively we could give an error message which informs the designer that a mismatch is introduced within this composition.
+%Either way, we control the timing behaviour of compositions.
+%What this example should make clear however, is that timing behaviour of individual components have an effect on compositions they are used in.
+%Building from individual components allows us to check the timing behaviour of the composition, assuming of course we want to maintain the timing behaviour for each component individually.
+%
+%
+%
+%
+%\subsubsection{Strict Constraints}
+%So far we have only limited expressions using the $\le$ operation.
+%The $\le$ operation between two time variables is not strict and allows the type system to add all the memory elements needed to make the composition work.
+%However, this might be too flexible for all forms of hardware description.
+%Sometimes a more strict verification of timing is required, especially in areas where latency is important.
+%To allow more strict verification of timing we first introduce the $\delta$ operation as in definition \ref{def:delta}.
+%
+%\begin{definitiontitled}[text only,float]{$\delta$-function for delays}{def:delta}
+%The $\delta$\textbf{-function} inserts a delay with a strict constraint.
+%In a binding as $\textbf{let } y = \delta(x)$, the variables $y$ and $x$ are associated with timing variables $\psi_y$ and $\psi_x$. 
+%As the $\delta$-function is used the constraint $\psi_y = \psi_x + 1$ is added.
+%\end{definitiontitled}
+%
+%There are multiple ways in which the $\delta$-function could influence the constraints in a design.
+%The first is to simply add the strict constraint as per definition \ref{def:delta} and leave the rest to be non-strict.
+%Another solution is to make strictness infectious. 
+%By this we mean that, whenever a $\delta$-function is used, everything that is composed together with this $\delta$ function must also use a strict constraint.
+%For now we consider this to be too restrictive, as in the current system this would mean that, once a single $\delta$-function is used, all other memory elements must also be introduced through $\delta$-functions, as the $\delta$-function is the only method to introduce a strict constraint.
+%
+%%%%%
+%% Rate changes
+%%%%%
+%\subsection{Rate Changes}
+%Up until now we did not allow changes in the rate of change.
+%Using a rate $r$, we can relate the rate of change associated with one time variable to another time variable.
+%We extend the timing expression $\tau$ to include the rate in definition \ref{def:timeexp2}.
+%
+%\begin{definitiontitled}[text only,float]{Time Expression (2)}{def:timeexp2}
+%We allow operations, such as addition and multiplication on time variables leading to \textbf{time expressions}.
+%Addition of a constant offset to a time variable as in $\psi + a$, is defined as creating the time expression $\tau= \psi + a$, where $\psi + a$ can always be replaced by $\tau$ and vice versa.
+%Additionally we allow the multiplication of a time variable with a rate $r \in \mathbb{N}_0$ within a time expression.
+%Time expressions are left associative, which means $3 \cdot \psi + a$ ought to be interpreted as $(3 \cdot \psi) + a$.
+%\end{definitiontitled}
+%
+%This means that, like offsets in time variables, the rate of change is only known in terms of other time expressions.
+%As an example, suppose we have the circuit of figure \ref{fig:ratechange}.
+%In this example we take one input, which is a natural number and output three consecutive numbers at a rate which changes three times as fast as the input.
+%The first number is left intact, while the two numbers following it are added to four and two respectively.
+%Effectively the output is a sequence of values, expressed via the expression $\langle 3 \cdot \psi, 3 \cdot \psi + 1, 3 \cdot \psi + 2 \rangle$.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{images/ratechange}
+%\caption{A timed adder with the constraints $(\psi_0,\psi_1) \le \psi_2$}
+%\label{fig:ratechange}
+%\end{figure}
+%
+%In this circuit we use a single time variable, which is multiplied with a factor three in certain expressions.
+%This relation is made clear in the timing diagram of \ref{fig:constraintsup}.
+%We can see how $3 \cdot \psi$ is constrained to $\psi$.
+%However, as $3\cdot \psi$ changes three times as fast this means that between $\psi$ and $\psi + 1$ the moments $3 \cdot \psi$, $3 \cdot \psi +1$ and $3 \cdot \psi+2$ also occur.
+%This also makes clear why time expressions are considered left associative, as the offset $+2$ in $3 \cdot \psi + 2$ refers to $3 \cdot \psi$, not $\psi$ alone.
+%
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.5\linewidth]{images/constraintsup}
+%\caption{A timed adder with the constraints $(\psi_0,\psi_1) \le \psi_2$}
+%\label{fig:constraintsup}
+%\end{figure}
+%
+%We can relate the timing diagram to a waveform format often used for hardware simulation purposes, as shown in figure \ref{fig:ratechangetiming}.
+%This waveform format shows that the output sequence is constructed using $in$, $x$ and $y$.
+%This means that $in$ is ascribed with $3 \cdot \psi$, which is possible since we only ascribe $in$ with a \textit{more} restrictive time expression.
+%As the input in this example is only used for a single cycle we can deduce that, while the lifetime of $in$ could be from $\psi$ to $\psi+1$, for this example only a lifetime of $\psi$ to $3\cdot\psi+1$ is needed.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.7\textwidth]{images/ratechangetiming}
+%\caption{A timed adder with the addition constraint $\psi_1 \le \psi_0 + 1$}
+%\label{fig:ratechangetiming}
+%\end{figure}
+%
+%When using rates we still have to take care of causality however.
+%Suppose we have the timing diagram of figure \ref{fig:constraintsup}, when we would want to downsample $3 \cdot \psi_0 + 1$ to $\psi$ we can only allow this if the result actually occurs at $\psi+1$, since $3 \cdot \psi + 1$ is strictly greater than $3 \cdot \psi$, which means that, by transivity $3 \cdot \psi + 1 > \psi$.
+%These constraints can be derived given the constraint $\psi \le 3 \cdot \psi$.
+%
+%Upscaling and downscaling can also be done automatically. 
+%For instance, given the constraint $3 \cdot \psi \le 6 \cdot \psi$, we could upscale the values of the left hand side to the rate of the right hand side.
+%For this to work however, the rate used in the right hand side of the inequality has to be a multiple of the rate on the left hand side.
+%If we would allow non-multiples then we would not be sure when \textit{exactly} two moments in time occur in relation to each other.
+%
+%While languages which use the streaming principle make streams first-class values, we do not do so here.
+%Whenever we create a sequence we are not allowed to refer to the sequence using a single variable.
+%This means that, when we create a sequence using multiple expressions as elements, we may only refer to the elements of the sequence, not the sequence in its entirety.
+%
+%\subsubsection{Sampling and Mapping}
+%The sequencing operation offers some interesting possibilities when it comes to mapping a description to a stream of values.
+%As an example, we introduce the component of figure \ref{fig:summapc1}.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.4\textwidth]{images/summapc1}
+%\caption{A timed adder with the addition constraint $\psi_1 \le \psi_0 + 1$}
+%\label{fig:summapc1}
+%\end{figure}
+%
+%This downsamples the input. 
+%We can see from the timing diagram in figure \ref{summap1} that the output $\psi$ changes once when $2 \cdot \psi$ changes twice.
+%Suppose the component $C$ adds two subsequent values as in $C \langle x, y \rangle = x + y$.
+%When we supply this component with the input stream $0,1,2,3,4,5$ the result would be $1,5,9$, as both values of the input change when the output changes once.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=\textwidth]{images/summap1}
+%\caption{A timed adder with the addition constraint $\psi_1 \le \psi_0 + 1$}
+%\label{fig:summap1}
+%\end{figure}
+%
+%When the timing behaviour of the component is changed to the one shown by figure \ref{fig:summapc2} this changes however.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.4\textwidth]{images/summapc2}
+%\caption{A timed adder with the addition constraint $\psi_1 \le \psi_0 + 1$}
+%\label{fig:summapc2}
+%\end{figure}
+%
+%This component does not downsample the input, yet it only defines a \textit{single} output, while the input defines two values.
+%As a result, when we take the same definition $C \langle x, y \rangle = x + y$ the input stream $0,1,2,3,4,5$ is transformed to $1,3,5,7,9$.
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.7\textwidth]{images/summap2}
+%\caption{A timed adder with the addition constraint $\psi_1 \le \psi_0 + 1$}
+%\label{fig:summap2}
+%\end{figure}
+%
+%The differences between the two operations is that the former defines \textit{downsampling} while the second example introduces \textit{sampling} without changing the rate of change.
+%This shows that introducing a sequence allows us to define upsampling, downsampling as well as regular sampling.
+%
+%\FloatBarrier
+%%%%%
+%% Informal Overview
+%%%%%
+%\subsection{Informal Overview}
+%The model of time we use is not unique, as we rely on discrete instances of time.
+%It has already been described by \citeauthor{lee1998framework} through the tagged event model, as explained in the previous chapter.
+%In this model every value is tagged with a timestamp and together they are called events.
+%
+%Events by themselves cannot fully describe the behaviour of circuits.
+%While \citeauthor{lee1998framework} use signals to describe the entire behaviour of a component, we use abstract events and relations between abstract events to describe the timing behaviour of a circuit.
+%We only allow description of an abstract event in the sense that we only know the type of values and the lifetime of values in terms of the lifetime of other values.
+%The types of values can be known through constraint-based typing, while the lifetime of values can be known through our type-system, which we will formally introduce in the next section.
+%The types of values allows us to determine the amount of wires and memory elements to use, while the lifetime allows us to reason about the periodic behaviour of values.
+%
+%The distinction between a signal and abstract event is important, as streaming languages allow variables to describe entire signals, and allow access to previous values from any given signal.
+%Here we only assume events and as such we do not have a notion of a previous value. 
+%While we have introduce the notion of a sequence, we never allow sequences to be first-class.
+%
+%For our purposes, namely specifying the timing behavior of hardware designs, timing is considered uniform, at least when focussing on designs which use a single clock source.
+%As such, the problem of maintaining a consistent view of time as mentioned by \citeauthor{lee1998framework} is not an issue here, though it might introduce significant problems when considering multiple clock domains.
+%
+%The model of time we introduces does not differ greatly from those used in synchronous languages.
+%In Esterel\cite{berry1992esterel} time is \textit{monitored} using watchdogs, triggers and temporal loops, without having the ability to \textit{specify} the timing tags directly.
+%The same can be said about Lustre and Signal.
+%In these languages timing \textit{emerges} from the specification as opposed to being part of the specification.
+%This is not the case here, as we define a specific event to occur at a specific time instance and it is up to the type checker to ensure our description is a correct representation of an actual circuit.
+%Behaviour still emerges from composition, as composition may change how two components interact.
+%However, once the component is defined to have a certain behavior, composition may only \textit{add} logic to ensure the composition behaves as intended.
+%In the next section we will formalize the semantics of our type-checking and inference rules through operational semantics.
+%
+%
+%
+%\newpage
+%%%%
+% Formal Semantics
+%%%%
+\section{Formal Semantics}
+As in the previous chapter when we introduced the simply typed $\lambda$-calculus, and constraint-based $\lambda$-calculus, we will introduce our typing rules using operational semantics.
+We will completely ignore traditional types in our expressions and only define the timing behaviour described by our type-system.
+Furthermore, we will first focus only on memory elements and combinational logic, without referring to rate-changes.
+
+First, we will introduce the grammar of a modified form of the $\lambda$-calculus, which we will call $\lambda_\psi$.
+After introducing the grammar we will define the relation between expressions of $\lambda_\psi$ to time expressions through typing rules.
+When we have introduced the typing rules we will infer the timing behaviour of a trivial circuit in order to show that the typing rules we have defined behave sanely.
+After doing so we introduce how we can upsample and downsample 
+Later on we will introduce typing rules and extensions to our grammar named $\lambda_\psi$ to formalize rate-changes.
+
+
+\subsection{The Grammar of $\lambda_\psi$}
+As time variables are similar to type variables we will use $\tau,\sigma,\rho$ to range over time variables.
+First we introduce the set of timing constraints $\mathcal{C}$, shown in definition \ref{def:constraintpsi} which express relations between time expressions.
+
+\begin{definitiontitled}[text only,float]{Set of constraints $\mathcal{C}$}{def:constraintpsi}
+Let $\tau$ and $\sigma$ be time expressions with associated rates $r$, $s$ and offsets $a$, $b$, then the $i^{th}$ \textbf{time-constraint} $\mathcal{C}_i$ is defined as an element of the set $\mathcal{C}$ as follows:
+\[
+\mathcal{C}   = \{\mathcal{C}_i | i \in 1..n\} \quad
+\mathcal{C}_i = \left\{ 
+  \begin{array}{l} 
+  \tau \le \sigma = r \cdot \psi_\tau + a \le s \cdot \psi_\sigma + b \: | \: \exists d. \frac{s}{r} = d \\ 
+  \tau = \sigma = r \cdot \psi_\tau + a = s \cdot \psi_\sigma + b\\ 
+\end{array} \right.
+\]
+, where $\le$ is the non-strict ordering relation and $=$ is the equality relation.
+The non-strict ordering relation $\le$ allows a change in rate \textit{only} when there exists a divisor $d$ such that $\frac{s}{r} = d$.
+This means that $r$ must be a factor of $s$ in order for the relation to be valid.
+\end{definitiontitled}
+
+Similar to $\Gamma$, $\Delta$ provides a mapping between term variables of the $\lambda$-calculus and time variables, as per definition \ref{def:deltacontext}.
+This context will provide us with the information we need when defining the operational semantics of our typing rules.
+
+\begin{definitiontitled}[text only,float]{Timing Context $\Delta$}{def:deltacontext}
+The \textbf{timing context} $\Delta$ is a set of bindings $x

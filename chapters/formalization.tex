@@ -1,0 +1,568 @@
+%include polycode.fmt 
+%format |-> = "\mapsto"
+%format veca = "\vec a"
+%format vecb = "\vec b"
+%format delay1 ="\sigma_1"
+%format delayx ="\sigma_x"
+%format delay = "\sigma"
+%format Delayx = "\Delta_x"
+%format Delay1 = "\Delta_1"
+%format mylang = "\lambda^{\rightarrow}_{\Delta}"
+%format psin = "\psi. n."
+%format < = "\langle"
+%format > = "\rangle"
+%format *> = ">"
+%format <--> = "\leftrightarrow"
+%format <- = "\leftarrow"
+%format -!> = "\overset{!}{\rightarrow}"
+%format \\ = "\lambda"
+%format <==> = "\leftrightarrow"
+%format <||> = "\langle || \rangle"
+%format par = "\langle || \rangle"
+
+\chapter{A Temporal Type System} \label{ch:typesystem}
+In the previous chapter, we have (informally) shown how representing time as part of the type system gives us the ability to reason about various forms of hardware and their compositions.
+However, informal reasoning about temporal representation does not give any guarantees with regards to the feasibility of expressing time as part of the type system.
+
+In this chapter, we define a grammar and a set of typing rules, which make a convincing case for the feasibility of expressing temporal behaviour as part of the type system.
+To do so, we first define expressions and timed types.
+Secondly, we introduce \textit{polytemporal types}, based on polytypes as introduced in section \ref{sec:polymorphiclambda}.
+Third, we define constraints as per HM(X)\cite{odersky1999type}, which are used in the typing rules of our type system.
+Finally, we show a number of derivations and briefly discuss the expressiveness of the given type system. 
+
+\section{Grammar of $\lambda_t$}
+The grammar of our language, which we call $\lambda_t$, is very similar to the languages discussed in chapter \ref{ch:background}.
+Expressions $e$ consists of the usual terms of the $\lambda$-calculus: variables, abstraction and application.
+We chose to also represent constants and the meta-function $\delta$.
+The $\delta$ meta-function is used to introduce delays within function types.
+Introduction of delays is severly restricted however, which is why we explain its mechanics later in this chapter, together with reasoning as to \textit{why} it is severly restricted.
+ 
+\begin{definitiontitled}[text only,float]{Expressions}{def:tt-exp}
+\begin{minipage}[b]{0.50\linewidth}
+\begin{tabular}{lclr}
+$e$     & $\Coloneqq$ &                                         & expressions:            \\
+        & |    & $x$                                            & \textit{(variable)}     \\
+        & |    & $\lambda x.e$                                  & \textit{(abstraction)}  \\
+        & |    & $e \: e$                                       & \textit{(application)}  \\
+        & |    & $c$                                            & \textit{(constant)}     \\
+        & |    & $\delta(e,n \in \mathbb{N}_0)$                                  & \textit{(delay)}        \\
+\end{tabular}
+\end{minipage}
+\begin{minipage}[b]{0.40\linewidth}
+\begin{tabular}{lclr}
+c       & $\Coloneqq$ &                                         & constants:                  \\
+        & |    & true                                           & \textit{(Boolean true)}     \\
+        & |    & false                                          & \textit{(Boolean false)}    \\
+        & |    & n $\in \mathbb{Z}$                             & \textit{(Integer literals)} \\
+\end{tabular}
+\end{minipage}
+\end{definitiontitled}
+
+The constants which we allow are either of the \textit{Boolean} variety, or the \textit{Integer} variety.
+Having the ability to define different types of constants allows us to easily show that our type-system also includes regular type-checking over base types.
+Furthermore, even though the system currently has no term which directly represents choice, the system could be easily extended with it when needed due to the existence of Boolean types.
+
+We define the set of simple types $\tau$ below.
+If needed, we also use the letter $\rho$ to range over simple types.
+Like the simply typed $\lambda$-calculus, there exist only two ways in which a simple type can be constructed.
+A function type can be constructed using the $\to$ type-constructor, while a \textit{timed type} can be constructed by combining a \textit{time expression} $\epsilon$ and a base type $T$.
+
+\begin{definitiontitled}[text only,float]{Types}{def:tt-type}
+\begin{minipage}[b]{0.50\linewidth}
+\begin{tabular}{lclr}
+$\tau$  & $\Coloneqq$ &                                         & simple types:               \\
+        & |           & $\tau \rightarrow \tau$                 & \textit{(function type)}    \\
+        & |           & $T \langle \epsilon \rangle$            & \textit{(timed type)}       \\
+\end{tabular}
+\end{minipage}
+\begin{minipage}[b]{0.40\linewidth}
+\begin{tabular}{lclr}
+T       & $\Coloneqq$ &                                         & base types:                 \\
+        & |           & \textit{Int}                            & \textit{(Integer type)}     \\
+        & |           & \textit{Bool}                           & \textit{(Boolean type)}     \\
+\end{tabular}
+\end{minipage}
+\begin{tabular}{lclr}
+$\epsilon$ & $\Coloneqq$ & $ \epsilon + (a \in \mathbb{N}_0)$   & \textit{(time expression)}  \\
+           & |           & $ t $                                & \textit{(time variable)}    \\
+\end{tabular}
+\end{definitiontitled}
+
+Base types are similar to those used in the simply-typed $\lambda$-calculus, and are constructed by one of the type constants \textit{Bool} or \textit{Int}.
+A base type tells us something about the form or shape of a value; either something is a number or a boolean value.
+Time expressions consists of a \textit{variable} moment in time $t$, and one or more \textit{concrete} offsets to $t$.
+Using $\tau$ we can define the type of a memory element which holds an integer as: $\textit{Int}\langle t \rangle \to \textit{Int}\langle t + 1 \rangle$.
+
+We can now define the behaviour of $\delta$ informally as well.
+The $\delta$ keyword accepts values with function types.
+When the $\delta$ function is applied to a function with some offset $n$, then it adds the offset to every time expression occuring on the right-hand side of the type constructor $\to$.
+For instance, given the identity function \[\lambda x.x : \textit{Int} \langle t \rangle \to \textit{Int} \langle t \rangle.\]
+We apply $\delta(\lambda x.x,1)$, which results in the function \[\delta(\lambda x.x,1) : \textit{Int} \langle t \rangle \to \textit{Int} \langle t + 1 \rangle.\]
+We discuss the full implications of this behaviour later in this chapter.
+
+Time variables, like type variables in Damas-Milner, are \textit{monomorphic} and range over the set of natural numbers $\mathbb{N}_0$.
+To describe hardware, we need to be able to define hardware components which are \textit{polytemporal}, e.g. work for clock cycles $0,1,\ldots,n$.
+For this we introduce a \textit{polytemporal type} in definition \ref{def:timescheme}, similar to polytypes of Damas-Milner.
+
+\begin{definitiontitled}[text only,float]{Polytemporal types}{def:timescheme}
+A \textit{polytemporal type} $\sigma$, written as 
+\[ \sigma = \forall t.\tau \quad (\textit{ftv}(\tau) = \{t\})\]
+, consists of universal quantification over a single time variable $t$, which is bound in the simple type $\tau$.
+Moreover, there are no free time variables in $\tau$ other than $t$.
+\end{definitiontitled}
+
+Every value is defined in terms of some time variable $t$.
+This means that, unlike other type systems which include some form of polymorphism, types are \textit{always} polytemporal.
+Literals are values which exist at every moment in time, expressed by their type: $42 : \forall t. T\langle t \rangle$.
+Similarly, variables are polytemporal as well.
+Without any restriction, all values can exist at any $t \in \mathbb{N}_0$, which is not exactly useful.
+Restrictions on time variables are needed to \textit{limit} the existence of values.
+For instance, by applying a function which represents a single memory element to a constant value, the \textit{resulting} value can only exist at every clockcycle $> 0$. 
+To be able to restrict existence of values, we introduce \textit{constraints} below.
+
+\section{Constraints}
+Constraints consists of existential quantification of time variables, which are used as binders for the time variables used in time expression constraints.
+Time expression constraints can be used to restrict a certain time expression in terms of another.
+Time expression constraints are inequalities with good reason; usage of equalities would restrict the expressiveness of the type system more than is needed.
+This is explained later in greater detail.
+
+\begin{definitiontitled}[text only,float]{Constraints}{def:tt-constraint}
+We define the \textit{constraint} $C$ as follows:\\
+\begin{tabularx}{0.75\textwidth}{lc X lr}
+$C$     & $\Coloneqq$ &                           & & constraints:                          \\
+        & |           & $\exists t. C$            & & \textit{(existential constraint)}     \\
+        & |           & $C \land C$               & & \textit{(composition)}                \\
+        & |           & $\epsilon \leq \epsilon$  & & \textit{(time expression constraint)} \\
+        & |           & T $=$ T                   & & \textit{(base type constraint)}       \\
+        & |           & $\tau \equiv \tau$        & & \textit{(type equivalence constraint)}\\
+        & |           & true                      & & \textit{(satisfied constraint)}       \\
+        & |           & false                     & & \textit{(non-satisfied constraint)}   \\
+\end{tabularx}\\
+, which can be used to define both type constraints as time constraints.
+\end{definitiontitled}
+
+It may seem strange to have both existential quantification of time variables and universal quantification in the same type system.
+However, the constraints $C$ are created separately from polytemporal types, and as a result, needs its own binders.
+This approach is not new; HM(X) uses the same approach to reason about polymorphism.
+
+In the constraints we have inequalities on time expressions, and equalities on base types.
+Restrictions on base types are not strictly needed to show the merit of our type system with regards to reasoning about temporal behaviour.
+We have included restrictions on base types to show that the combination of time expressions and base types can indeed be reasoned about within the same system.
+Additionally, the type equivalence constraint requires that types must be equal under $\alpha$-conversion.
+These different forms of constraints are needed in order to reason about the time-dependent behaviour, and will be explained in more detail later.
+
+Other constraints include the trivial constraints ``true'', ``false'' and composition of constraints through logical conjuction ($\land$).
+Composition of constraints including existential quantification needs to result in a well-formed constraint.
+Even though the conjuction $\exists t_1.C_1 \land \exists t_2.C_2$ is correct from the above definition, it becomes tedious to make sure every time variable is quantified and in scope.
+As a result, we define a constraint to be well-formed if every existential quantification is performed first, before introducing additional constraints.
+In the typing rules presented later in this chapter, we assume that every constraint is well-formed.
+When two constraints as $\exists t_1.C_1 \land \exists t_2.C_2$ are composed, all existential quantification is moved to the head of the constraint.
+
+Together with the context $\Gamma$, constraints are used in type judgements of the form $C; \Gamma \vdash e : \forall t. \tau$.
+The type judgment ought to be read as: we can derive from the context $\Gamma$ that the expression $e$ has the simple type $\tau$, for every $t$ such that the constraints in $C$ hold.
+
+\begin{definitiontitled}[text only,float]{Constraints}{def:tt-context}
+We define the context $\Gamma$ as follows:\\
+\begin{tabularx}{0.75\textwidth}{lc X lr}
+$\Gamma$& $\Coloneqq$ &                                         & contexts:           \\
+        & |     & $\emptyset$                                   & (empty context)     \\
+        & |     & $\Gamma,x:\tau$                               & (type binding).     \\
+\end{tabularx}\\
+\end{definitiontitled}
+
+Without typing rules it is difficult to create an example which shows how constraints can be used to reason about the existence of values.
+To do so, we postpone showing a full type derivation here, and focus on how constraints can be used.
+Suppose we have a function \textit{register} with the polytemporal type 
+\[\textit{register} : \forall t. \textit{Int}\langle t \rangle \to \textit{Int}\langle t + 1 \rangle.\]
+Now, without any constraint, this function can be used to transform any \textit{Int} of any $t \in \mathbb{N}_0$ to an \textit{Int} at $t+1$.
+When \textit{register} is applied to a value, as in $v = \textit{register} \: 42$, the resulting value $v$ exists one clockcycle later than the value \textit{register} is applied to.
+All this can be expressed without any constraint, as the value simply has type 
+\[v : \forall t. \textit{Int}\langle t + 1 \rangle.\]
+However, when we apply another function (called \textit{foo}) to $v$, the constraint that $v$ can only exists at $t \geq 1$ must be adhered to.
+Suppose \textit{foo} has type: \[\textit{foo} : \forall t'. \textit{Int}\langle t' \rangle \to \textit{Int}\langle t' + 1 \rangle \to \textit{Int}\langle t' + 2 \rangle.\]
+When applied to $v$, as in $v' = \textit{foo} \: v$, the resulting function has type \[\textit{foo} \: v : \forall t'. \textit{Int}\langle t' + 1 \rangle \to \textit{Int}\langle t' + 2 \rangle.\]
+However, this does \textit{not} work for every $t'$, as the first argument of \textit{foo} does not exist at $t' = 0$.
+By adding the constraint \[\exists t. \exists t'. t + 1 \leq t'\], we can be sure that, when the constraint holds, $t'$ is not equal to $0$.
+If it were, then there would have to exist a $t$ such that $t+1 \leq 0$. 
+As $t \in \mathbb{N}_0$, this is obviously incorrect.
+
+It may seem odd at this point why we chose inequalities over equalities, as equalities would lead to the same result.
+However, consider the function resulting from $\textit{foo} \: v$.
+If we were to apply it to $v$ again, as in $v'' = (\textit{foo} \: v) \: v$, then the resulting constraint \[\exists t. \exists t'. t + 1 = t' \land t + 1 = t' + 1\] could never hold.
+Yet, this application is \textit{valid}.
+Memory elements can be used to delay a value indefinitely.
+With inequalities we can express this as part of the constraint: \[ \exists t. \exists t'. t+1 \leq t' \land t+1 \leq t'+1.\]
+From this constraint we can derive that, in order for the composition of $v''$ to work, a memory element has to be added for the \textit{second} $v$, before applying $\textit{foo} \: v$ to it.
+We can derive this by solving the constraints for the minimal value of $t$ and $t'$.
+From the constraints we derive $t = 0$ and $t' = 1$.
+Plugging these into the known types of \textit{foo} and \textit{register}, allows us to determine when a memory element needs to be added.
+For instance, $v$ exists at $1$ if $t=0$, and \textit{foo}'s second argument is expected at $t' + 1$, which is $2$ if $t' = 1$.
+The difference between $v$ and the type of the second argument of \textit{foo}, indicates that something must be added here in order to make the composition work.
+This also makes sense intuitively.
+The type of \textit{foo} indicates that it \textit{expects} the second argument to exist one clock cycle later than the first.
+When applied to the same value twice, something must be done to one of the values in order to make the composition work.
+
+\section{Typing Rules}
+Now that we introduced constraints, we can introduce the typing rules which give us the ability to (re)construct and verify expressions of $\lambda_t$.
+Before doing so however, we provide a relation between two simple types below, in order to simplify the definition of typing rules.
+In particular, this type relation is used to create the constraints which are introduced by function application.
+
+\begin{definitiontitled}[text only,float]{The type relation $\preceq$}{def:preceq}
+We define the precedence relation $\preceq$ as
+\[\tau_1 \preceq \tau_2 = \left\{ 
+  \begin{array}{l l}
+      \epsilon_1 \leq \epsilon_2 \land \text{T}_1 = \text{T}_2
+    & \text{if $\tau_1,\tau_2 = T_1 \langle \epsilon_1 \rangle, T_2 \langle \epsilon_2 \rangle$ }\\
+      \tau_1 \equiv \tau_2
+    & \text{if $\tau_1,\tau_2 = \tau_{11} \to \tau_{12} \land \tau_{21} \to \tau_{22}$}\\
+      \text{false}
+    & \text{otherwise}\\
+  \end{array} \right.
+\]
+, where $\tau_1$ temporally precedes $\tau_2$ and the base types of $\tau_1$ and $\tau_2$ are equal.
+\end{definitiontitled}
+
+The $\preceq$ relation distinguishes three cases to do so.
+In the first case, a relation between two timed types is created.
+As explained in the previous section, relations between time expressions are inequalities.
+
+The second case defines type equality under $\alpha$-conversion.
+This case is used to define the precedence relation for function types.
+To show why we use equivalence here, instead of defining a ``real'' precedence relation for function types, we show the two most obvious ways to represent function precedence, and why they do not work.
+
+First, we define the relation $\tau_1 \preceq \tau_2 = \tau_{11} \preceq \tau_{21} \land \tau_{12} \preceq \tau_{22}$, where $\tau_1 = \tau_{11} \to \tau_{12}$ and $\tau_2 = \tau_{21} \to \tau_{22}$.
+In this case, $\tau_1$ must precede $\tau_2$. 
+When $\tau_2$ represents the type of a function which is expected, then $\tau_1$ represents the type of a function which is actually supplied.
+By applying the type inequality pointwise for every timed type in $\tau_1$ and $\tau_2$, we state that the supplied function may expect the supplied values \textit{earlier} than the expected function.
+Even though the constraints would reflect that condition if it occurs, by using this precedence relation additional memory elements could be inserted through reckless use of higher order functions.
+
+The same precedence relation could be inverted.
+However, this is also problematic, as there is no guarantee that the supplied function results in a value, before that actual value is needed.
+Again, the constraints would reflect that condition, and more memory elements could be inserted if this condition occurs.
+However, as we already have a certain amount of automatic introduction of memory elements, we restrict the type of higher order functions to match \textit{exactly} with the expected function type.
+
+Finally, the third case is used for cases where types do not match. 
+Even though this case might seem superfluous when compared to the second, the third case is needed in order to restrict usage of sequences, which we discuss later in this chapter.
+
+\subsection{The Typing Rules TT-Var, TT-Const \& TT-Gen}
+Finally, we define and discuss the typing rules.
+We start by the rule TT-Var, which is similar to the rules involving variables discussed in chapter \ref{ch:background}.
+
+\begin{definitiontitled}[text only]{Typing rules of $\lambda_t$ (a)}{def:typerules}
+\begin{tabularx}{\textwidth}{ r r X r r}
+\centering
+$ \displaystyle 
+  \frac{  \Gamma(x) = \tau
+  }{      \text{true}; \Gamma \vdash x : \tau }
+$ &
+TT-Var
+&
+&
+\centering
+$ \displaystyle
+\frac{ 
+} { C; \Gamma \vdash c : \tau }
+$ &
+TT-Const \\
+\end{tabularx}\newline
+\begin{tabularx}{\textwidth}{X r l X}
+&
+$ \displaystyle
+  \frac{ C; \Gamma \vdash e : \tau \quad \textit{ftv}(\tau) = t 
+  }{     \exists t. C; \Gamma \vdash \forall t.\tau }
+$ 
+& TT-Gen 
+& \\
+\end{tabularx}
+\end{definitiontitled}
+
+When $\Gamma(x) = \tau$, then we can conclude from $\Gamma$, without constraint, that $x : \tau$.
+We use this to define the type of $x$ in $\Gamma_0$ as follows:
+\begin{prooftree}
+\AxiomC{$\Gamma_0(x) = \textit{Int}\langle t_0 \rangle$}
+\RightLabel{\scriptsize{(1)}}
+\UnaryInfC{true;$\Gamma_0 \vdash x : \textit{Int}\langle t_0 \rangle$.}
+\end{prooftree}
+
+As shown, the TT-Var rule does not introduce universal quantification over $t_0$.
+We apply TT-Gen, which transforms an expression $e$ with type $\tau$, to a polytemporal type.
+A restriction on TT-Gen is that all free variables in $\tau$ are equal to $t$, in order to allow universal quantification over $t$.
+Since the definition of $\tau$ does not include a binder for time variables, all time variables in $\tau$ are free.
+This means that, after applying this rule, $e : \forall t.\tau$, no time variables other than $t$ are used in $\tau$.
+
+Additionally, we add the constraint $\exists t.$, without modifying the existing constraint.
+Existential quantification in the constraint provides us with a binder to add inequalities of time expressions.
+It is however difficult to see that, if there exists a $t$ such that the constraints in $C$ hold, $e$ has the type $\forall t.\tau$.
+As mentioned earlier, the universal quantification is subject to the constraints in $C$.
+If the constraints in $C$ do not hold for a particular $t$, then $e$ is not well-typed for that particular $t$.
+If we assume $C = \text{true}$, then any $t \in \mathbb{N}_0$ can be chosen. 
+
+We use the definition of $\Gamma_0$ from {\scriptsize{(1)}}, to derive the polytemporal type of $x$.
+\begin{prooftree}
+\AxiomC{true;$\Gamma_0 \vdash x : \textit{Int}\langle t_0 \rangle$}
+\RightLabel{\scriptsize{(2)}}
+\UnaryInfC{$\exists t_0.$true;$\Gamma_0 \vdash x : \forall t_0. \textit{Int}\langle t_0 \rangle$}
+\end{prooftree}
+
+\subsection{The Typing Rule TT-Abs}
+Next, we define TT-Abs.
+This rule is rather involved, for two reasons:
+\begin{enumerate*}
+ \item  polytemporal types only consist of a single time variable, so the types of $x$ and $e$ need to be changed via $\alpha$-conversion to use a new time variable;
+ \item  if $x$ is used within $e$, then the constraints the types of $x$ and $e$ are subject to are known, yet the exact relation between $x$ and $y$ cannot be determined from their types alone.
+\end{enumerate*}
+
+\begin{definitiontitled}[text only]{Typing rules of $\lambda_t$ (b)}{def:tt-abs}
+\centering
+\begin{tabular}{ r l }
+$ \displaystyle 
+  \frac{  C; \Gamma \vdash x : \forall t_1.\tau_1 \quad C; \Gamma \vdash e : \forall t_2. \tau_2 \quad t_3 \notin \textit{vars}(C,\Gamma)
+  }{      \exists t_3. C \land t_3 \leq t_1 \land t_2 \leq t_3+a;\Gamma \vdash \lambda x. e : \forall t_3. [t_3/t_1]\tau_1 \to [t_3 + a/t_2]\tau_2 }
+$
+& TT-Abs \\
+\end{tabular}
+\end{definitiontitled}
+
+Given that $x$ is used within $e$, we can determine the exact difference in the time expressions of $x$ and $e$ based on the constraints they are subject to.
+From this difference we can, in principle, determine an offset $a$ such that a fresh time variable $t_3 \leq t_1$ and $t_2 \leq t_3 + a$.
+When this is the case, we say the resulting abstraction \textit{encloses} $x$ and $e$.
+
+Similar to Damas-Milner, we cannot determine from types alone what the new type of $\lambda x.e$ ought to be.
+Like algorithm $W$ in the case of Damas-Milner, we need an algorithm which finds the smallest $a$ such that $\lambda x. e : \forall t_3.[t_3/t_1]\tau_1 \to [t_3 + a/t_2]\tau_2$ encloses $x : \forall t_1.\tau_1 $ and $e : \forall t_2. \tau_2$. 
+We discuss the options of solving for $a$ in the next section.
+
+Using the derivation of {\scriptsize (2)}, we derive the type of the identity function $\lambda x.x$.
+Since we derive the identity function here, $e = x$, which results in two identical premises for the rule TT-Abs.
+For simplicity' sake, we only include the single premise here.
+
+\begin{prooftree}
+\AxiomC{$\exists t_0.$true;$\Gamma_0 \vdash x : \forall t_0. \textit{Int}\langle t_0 \rangle$}
+\RightLabel{\scriptsize (3)}
+\UnaryInfC{$\exists t_1.\exists t_0. t_1 \leq t_0 \land t_0 \leq t_1 + a;\Gamma_0 \vdash \lambda x.x : \forall t_1. \textit{Int} \langle t_1 \rangle \to \textit{Int} \langle t_1 \rangle$}
+\end{prooftree}
+We take $a=0$ and simplify this expression for presentation purposes by removing the constraint $t_1 \leq t_0 \land t_0 \leq t_1 + a$, which implies $t_1 = t_0$.
+The resulting type judgement reads:
+\[\exists t_0.\text{true;}\Gamma_0 \vdash \lambda x.x : \forall t_0. \textit{Int} \langle t_0 \rangle \to \textit{Int} \langle t_0 \rangle.\]
+
+In the example of {\scriptsize (3)}, $e$ is equal to $x$, which greatly simplifies the derivation. 
+After introducing the remaining typing rules we will show another derivation, where $e$ and $x$ are different.
+
+\subsection{The Typing Rule TT-Delta}
+To introduce delays, TT-Delta applies a positive shift to time expression of the right hand side of a function type.
+\begin{definitiontitled}[text only]{Typing rules of $\lambda_t$ (c)}{def:tt-delta}
+\centering
+\begin{tabular}{l l}
+$ \displaystyle
+\frac{ C;\Gamma \vdash e : \forall t. \tau \rightarrow \rho 
+} { C;\Gamma \vdash \delta(e,n) : \forall t. \tau \rightarrow [t+n/t]\rho}
+$ &
+TT-Delta\\
+\end{tabular}
+\end{definitiontitled}
+
+As a result, function types always have an increasing delay as more $\to$ type constructors are nested.
+Given a function type, the TT-Delta rule only delays the type of the result, whether that is another function type or a timed type.
+Using the result of {\scriptsize (3)}, we derive the type of a function which represents a single memory element as follows.
+
+\begin{prooftree}
+\AxiomC{$\exists t_0.$true;$\Gamma_0 \vdash \lambda x.x : \forall t_0. \textit{Int}\langle t_0 \rangle \to \textit{Int}\langle t_0 \rangle$}
+\RightLabel{\scriptsize (4)}
+\UnaryInfC{$\exists t_0.$true;$\Gamma_0 \vdash \delta(\lambda x.x,1) : \forall t_0. \textit{Int}\langle t_0 \rangle \to \textit{Int}\langle t_0 + 1 \rangle$ }
+\end{prooftree}
+
+\subsection{The Typing Rule TT-App}
+Functions can be applied to other values.
+In the rule TT-App, we define that $e_1$ must have a function type, and $e_2$ has a type which is unrelated to $e_1$.
+\begin{definitiontitled}[text only]{Typing rules of $\lambda_t$ (d)}{def:tt-app}
+\centering
+\begin{tabular}{l l}
+$ \displaystyle
+  \frac{  C_1; f : \forall t_1. \textit{Int}\langle t_1 \rangle \rightarrow \textit{Int}\langle t_1 + 1 \rangle \quad \quad C_2; v : \forall t_2. \textit{Int}\langle t_2 \rangle
+  } {     \textit{Int} = \textit{Int} \land t_2 \leq t_1 \vdash f \: v : \forall t_1. \textit{Int}\langle t_1 + 1 \rangle } 
+$ 
+& TT-App \\
+\end{tabular} 
+\end{definitiontitled}
+
+This is contrary to how other languages define function application, where $\tau_2 = \tau_{11}$.
+Instead, we state that $\tau_2 \preceq \tau_{11}$.
+Intuitively speaking, we can apply a function to a value when the value exists, as long as the value exists before the function ``expects'' it to exist.
+If the value exists one or more clockcycles before the function expects it to exist, we can use memory elements to delay the value to the point where the function expects it.
+
+To show how this typing rule works, we take the derivation of $\Gamma_0$ from {\scriptsize (1)} and {\scriptsize (2)} to similarly derive the type of $y$.
+We then apply the function of {\scriptsize (4)} to $y$, leading to a set of constraints as follows.
+\begin{prooftree}
+\AxiomC{$\exists t_0.$true;$\Gamma_0 \vdash \delta(\lambda x.x,1) : \forall t_0. \textit{Int}\langle t_0 \rangle \to \textit{Int}\langle t_0 + 1 \rangle$}
+\AxiomC{$\Gamma_2(y) = \textit{Int}\langle t_2 \rangle$}
+\UnaryInfC{true;$\Gamma_2 \vdash y : \textit{Int}\langle t_2 \rangle$}
+\UnaryInfC{$\exists t_2.$true;$\Gamma_2 \vdash y : \forall t_2. \textit{Int}\langle t_2 \rangle$}
+\RightLabel{\scriptsize (5)}
+\BinaryInfC{$\exists t_0,t_2.t_2 \leq t_0 \land \textit{Int} = \textit{Int}$;$\Gamma_0 \cup \Gamma_2 \vdash \delta(\lambda x.x,1) y : \forall t_0. \textit{Int}\langle t_0 + 1 \rangle$}
+\end{prooftree}
+
+\subsection{Other Derivations}
+To show a more involved example, we use the application $\delta(\lambda x.x,1) \: y$ from {\scriptsize (5)} to create a function of $y$.
+As shown in {\scriptsize (5)}, one register is applied to $y$.
+As a result, the abstraction of $\lambda y. \delta(\lambda x.x,1) \: y$ would have the same type as the expression in derivation {\scriptsize (4)}.
+To create a more meaningful derivation, we create another shifted identity function $\delta(\lambda z.z,1)$, which is derived similarly to {\scriptsize (4)}, to create the following expression:
+\[ \lambda y.\delta(\lambda z.z,1) \: (\delta(\lambda x.x,1) \: y),\]
+which delays the argument $y$ of type \textit{Int} twice.
+
+To keep the typing rules readable, we define the following shorthands, which are derived from {\scriptsize (1)} to {\scriptsize (5)}.
+\[ \begin{array}{l r} 
+      C_2 = \exists t_0,t_2.t_2 \leq t_0 \land \textit{Int} = \textit{Int} & \text{\scriptsize derived from (4)}\\
+      C_3 = \exists t_3.\text{true} & \text{\scriptsize derived from (2)}\\ 
+      e_3 = \delta(\lambda z.z,1) \: (\delta(\lambda x.x,1) \: y) & \text{\scriptsize derived from (5) and (2)}\\
+      \Gamma_4 = \Gamma_0 \cup \Gamma_2 & \text{\scriptsize derived from (5)}\\
+   \end{array}
+\]
+
+The constraint $C_3$ is associated with $\delta(\lambda z.z,1)$, which has type $\forall t_3. \textit{Int}\langle t_3 \rangle \to \textit{Int}\langle t_3 + 1\rangle$.
+We use the above definitions to derive the following:
+
+\begin{prooftree}
+\AxiomC{$C_3;\Gamma_3 \vdash \delta(\lambda z.z,1) : \forall t_3. \textit{Int}\langle t_3 \rangle \to \textit{Int}\langle t_3 + 1 \rangle$}
+\AxiomC{$C_2;\Gamma_4 \vdash \delta(\lambda x.x,1) y : \forall t_0. \textit{Int}\langle t_0 + 1 \rangle$}
+\RightLabel{\scriptsize (6)}
+\BinaryInfC{$C_1 \land C_2 \land \textit{Int}\langle t_0 + 1 \rangle \preceq \textit{Int}\langle t_3 \rangle; \Gamma_4 \vdash e_3 : \forall t_3. \textit{Int} \langle t_3 + 1 \rangle$}
+\end{prooftree}
+
+In {\scriptsize (6)} we defined two memory elements, and applied them to $y$.
+We use this definition to show how the abstraction of $y$ leads to the (correct) type $\forall t_4. \textit{Int}\langle t_4 \rangle \to \textit{Int} \langle t_4 + 2 \rangle$.
+We define $C_4 = C_1 \land C_2 \land \textit{Int}\langle t_0 + 1 \rangle \preceq \textit{Int}\langle t_3 \rangle$ and apply TT-Abs to it as follows.
+
+\begin{prooftree}
+\AxiomC{$C_4;\Gamma_4 \vdash e_3 : \forall t_3. \textit{Int} \langle t_3 + 1 \rangle$}
+\AxiomC{$\exists t_2.$true;$\Gamma_2 \vdash y : \forall t_2. \textit{Int} \langle t_2 \rangle$}
+\RightLabel{\scriptsize (7)}
+\BinaryInfC{$\exists t_4.C_4\land t_4 \leq t_2 \land t_3 \leq t_4 + a;\Gamma_4 \vdash \lambda y.e_3 : \forall t_4. \textit{Int}\langle t_4 \rangle \to \textit{Int} \langle t_4 + a + 1 \rangle$}
+\end{prooftree}
+
+We rewrite the constraints from the conclusion of {\scriptsize (7)} for presentation purposes.
+\[
+\begin{array}{l l}
+t_4 \leq t_2 & \land \\
+t_2 \leq t_0 & \land \\
+t_0 + 1 \leq t_3 & \land \\
+t_3 \leq t_4 + a \\
+\end{array}
+\]
+
+To find $a$ manually and create a minimal amount of memory elements, we take $t_4=0$ , $t_2=0$ and $t_0=0$.
+This results in $1 \leq t_3 \land t_3 \leq t_4 + a$.
+We take $t_3=1$, which results in $a=1$.
+Placing $a=1$ into the result of {\scriptsize (7)} gives $\lambda y.e_3 : \forall t_4. \textit{Int}\langle t_4 \rangle \to \textit{Int} \langle t_4 + 2 \rangle$.
+
+The (complex) derivation of {\scriptsize (7)} shows that types of compositions, which use functions with time-dependent behaviour, can be reconstructed.
+
+\section{Solving Constraints}
+In the previous section we have shown that we can derive the polytemporal type of expressions and a constraint which must hold for the expression to have a valid type.
+Following the discussion of the previous section, we need an algorithm such that:
+\begin{enumerate*}
+ \item we can derive the offset needed for a single time variable to enclose two others;
+ \item we can derive the possible placement of registers when hardware is generated from the type-checked expression;
+\end{enumerate*}
+
+Instead of defining our own algorithm, we use an \gls{smt}-solver such as Z3\cite{de2008z3} or Yices\cite{dutertre2006yices} to solve our constraints directly.
+\gls{smt}-solvers accept first-order logic extended with arithmetic statements, and can be used to find a set of integers which satisfy our constraints.
+Given that we can find a set of integers which satisfy our constraints, we can determine the difference in time between time variables.
+By examining the difference between time variables we can determine where registers need to be inserted.
+The set of constraints following from {derivation \scriptsize (7)}, are used to derive $t_0 = t_2 = t_4 = 0$, $t_3 = 1$.
+From the derivations {\scriptsize (1)} to {\scriptsize (7)}, we know the type of every subexpression in $\lambda y.e_3$.
+From these types, and plugging in the values for $t_0$ to $t_4$ from above, we can derive where differences in existence occur.
+Thus, we can derive where memory elements need to be inserted.
+
+\section{Sequences}
+As explained in the previous chapter, referential transparency does not allow us to access multiple values from the same wire.
+Instead, we expand the grammar of definition \ref{def:tt-exp}.
+
+\begin{definitiontitled}[text only,float]{Types (b)}{def:tt-typeb}
+\begin{minipage}[b]{0.50\linewidth}
+\begin{tabular}{lclr}
+$\tau$  & $\Coloneqq$ &                                         & expressions:            \\
+        & |           & T s                                     & \textit{(sequence type)}  \\
+        & |           & $\ldots$                                & $\ldots$                \\
+\end{tabular}
+\end{minipage}
+\begin{minipage}[b]{0.40\linewidth}
+\begin{tabular}{lclr}
+s       & $\Coloneqq$ &                                         & sequence:                   \\
+        & |           & $\epsilon$, s                           & \textit{(time expression)}  \\
+        & |           & $\llangle \rrangle$       & \textit{(empty sequence)}   \\
+\end{tabular}
+\end{minipage}
+\end{definitiontitled}
+
+Sequences behave like lists in functional languages, though here these ``lists'' are not first class.
+Addition of sequences to the grammar alone does not make sequences first class. 
+As the precedence relation of definition \ref{def:preceq} is not modified, any usage of sequences in function application will lead to the ``false'' constraint.
+To introduce sequences, we define the following rule.
+
+\begin{definitiontitled}[text only]{Typing rules of $\lambda_t$ (e)}{def:tt-seq}
+\centering
+\begin{tabular}{l l}
+$ \displaystyle
+  \frac{  C; \Gamma \vdash e : \forall t. T\langle t \rangle \to T \langle t+1 \rangle \to \ldots \to T \langle t+n \rangle \to \rho 
+  } {     C; \Gamma \vdash seq(e) : \forall t. T\llangle t,t+1,\ldots,t+n\rrangle \to \rho } 
+$ 
+& TT-Seq \\
+\end{tabular} 
+\end{definitiontitled}
+The TT-Seq rule allows us to define a sequence based on a n-ary function.
+Given an expression $e$, if that expression represents a function with a number of strictly temporally increasing elements of the same base type $T$, then we can construct a sequence out of those arguments.
+Since the precedence relation does not allow us to apply a function with sequences to a value, we define a separate rule named TT-SApp.
+
+\begin{definitiontitled}[text only]{Typing rules of $\lambda_t$ (f)}{def:tt-sapp}
+\centering
+\begin{tabular}{l l}
+$ \displaystyle
+  \frac{  C_1; \Gamma_1 \vdash e_1 : \forall t_1. T \llangle t_1,\ldots,t_1+n\rrangle \to \rho \quad e_2 : C_2; \Gamma_2 \vdash \forall t_2. \tau_2
+  } {     C_1 \land C_2 \land \tau_2 \preceq T\langle t_1 \rangle; \Gamma_1 \cup \Gamma_2 \vdash e_1 \: e_2 : \forall t_1. \rho }
+$ 
+& TT-SApp \\
+\end{tabular} 
+\end{definitiontitled}
+
+This rule defines that, given a function which accepts a sequence, it can be applied to a single value.
+The sequence type only informs the type system that we wish to extract multiple values from the same source.
+Since the original function $e$ from TT-Seq is well-typed, the function definition is correct.
+
+\section{Conclusion}
+The type system we presented is fairly limited.
+Delays can only be inserted using the $\delta$ operator.
+The $\delta$ operator acts on values with a function type, which makes it a little cumbersome when using n-ary functions.
+In case the result of a binary function exists later than the second argument, a second $\delta$-operation needs to be applied to the \textit{partially applied} binary function.
+This is mostly an operational concern however, as application of the $\delta$ operation with the appropriate offset to a function can be automated.
+
+A downside of the $\delta$ approach is that it may be hard to give the end-user proper feedback if an error occurs involving a delayed function.
+Because of the $\delta$ keyword, there exists a disconnect between how delays are \textit{presented} (see the previous chapter), and how delays are \textit{created}.
+While a transformation between the two representations probably exists, the disconnect between the two representations might cause problems when errors need to be reported.
+
+An obvious solution might be to allow $\delta$ to be applied to \textit{any} value.
+Unfortunately, if this were the case then we cannot be sure that only functions which have an increasing delay can be constructed.
+For instance, a binary function could be created where a delay is only applied to the first argument, which would result in a function without an increasing delay.
+Even though constraints give us the ability to enforce construction of function types according to certain rules, it is hard to provide a meta-function which allows the user to communicate function types without exposing the constraint-based system to the user.
+
+The constraint-based system, as explored in HM(X)\cite{odersky1999type}, makes it difficult to see for which $t$ an expression is well-typed.
+The polytemporal type $\sigma$ does not have enough information available to determine whether an expression is well-typed from $\sigma$ alone.
+As a result, we cannot use typing rules alone to determine whether or not an expression is well-typed.
+Moreover, to allow abstraction, we need to determine an offset $a$ such that a single time variable encloses both the expression and the variable used in the abstraction.
+This is similar to Damas-Milner, where an additional algorithm, $W$, is needed to determine the principal type of an expression.
+
+Despite the apparent complexity, the resulting type-system can only realistically model pipelining and sequences.
+A major advantage of the type system however, is that the type system only allows variables to refer to single values or functions.
+As a result, and due to referential transparency, whenever a variable is used we can mentally replace it with some placeholder value to see what the function does.
+
+Even though we introduced polytemporal types, we cannot use a single function definition multiple times.
+To use a single function twice within a description, let-bindings or where-clauses need to be introduced.
+Aside from the inability to use the same function twice within the same expression, we also have not determined a way to ``freshen'' the time variables used in the type of a function.
+Even if the time variables of the function type itself were fresh, the same time variables are also used within constraints.
+Without further analysis, it is difficult to see whether freshening of the time variables used within a function type is sufficient.
+
+The given type system is far from complete.
+Without a soundness proof, it is difficult to see what situations we have missed in our analysis.
+However, the given type system allows us to gain a better understanding on how to express time as part of the type system.
+The lack of higher order functions which are flexible with regards to their temporal constraints is unfortunate.
+Currently, we define higher order functions to require exactly the same types under $\alpha$-conversion of time variables.
+This reduces the usefulness of higher order functions.
+

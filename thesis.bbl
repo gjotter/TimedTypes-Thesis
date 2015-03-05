@@ -1,0 +1,268 @@
+\begin{thebibliography}{46}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[liq()]{liquidhaskell}
+Liquidhaskell web page.
+\newblock \url{http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/about/}.
+\newblock Accessed: 2013-08-11.
+
+\bibitem[sbv()]{sbv}
+{Data.SBV} library description.
+\newblock
+  \url{http://hackage.haskell.org/packages/archive/sbv/0.9.7/doc/html/Data-SBV.html}.
+\newblock Accessed: 2013-06-16.
+
+\bibitem[Ackerman(1982)]{ackerman1982data}
+W.B. Ackerman.
+\newblock Data flow languages.
+\newblock \emph{Computer;(United States)}, 2, 1982.
+
+\bibitem[Acosta(2007)]{acosta2007hardware}
+Alfonso Acosta.
+\newblock Hardware synthesis in forsyde.
+\newblock \emph{Sweden: KTH/ICT/ETS}, 2007.
+
+\bibitem[Acosta(2008)]{acosta2008forsyde}
+Alfonso Acosta.
+\newblock Forsyde tutorial, 2008.
+
+\bibitem[Baaij(2009)]{clashchris}
+Christiaan Baaij.
+\newblock Clash, from haskell to hardware.
+\newblock Master's thesis, University of Twente, 2009.
+
+\bibitem[Barendregt(1985)]{barendregt1985lambda}
+Hendrik~Pieter Barendregt.
+\newblock \emph{The lambda calculus: Its syntax and semantics}, volume 103.
+\newblock North Holland, 1985.
+
+\bibitem[Berry and Gonthier(1992)]{berry1992esterel}
+G{\'e}rard Berry and Georges Gonthier.
+\newblock The esterel synchronous programming language: Design, semantics,
+  implementation.
+\newblock \emph{Science of computer programming}, 19\penalty0 (2):\penalty0
+  87--152, 1992.
+
+\bibitem[Bjesse et~al.(1998)Bjesse, Claessen, Sheeran, and
+  Singh]{bjesse1998lava}
+P.~Bjesse, K.~Claessen, M.~Sheeran, and S.~Singh.
+\newblock Lava: hardware design in haskell.
+\newblock In \emph{ACM SIGPLAN Notices}, volume~34, pages 174--184. ACM, 1998.
+
+\bibitem[Brady(2011)]{brady2011idris}
+Edwin~C Brady.
+\newblock Idris---: systems programming meets full dependent types.
+\newblock In \emph{Proceedings of the 5th ACM workshop on Programming languages
+  meets program verification}, pages 43--54. ACM, 2011.
+
+\bibitem[Claessen and Pace(2002)]{claessen2002embedded}
+K.~Claessen and G.~Pace.
+\newblock An embedded language framework for hardware compilation.
+\newblock \emph{Designing Correct Circuits}, 2, 2002.
+
+\bibitem[Claessen and Sands(1999)]{claessen1999observable}
+K.~Claessen and D.~Sands.
+\newblock Observable sharing for functional circuit description.
+\newblock \emph{Advances in Computing Science—ASIAN’99}, pages 78--78,
+  1999.
+
+\bibitem[Damas and Milner(1982)]{damas1982principal}
+Luis Damas and Robin Milner.
+\newblock Principal type-schemes for functional programs.
+\newblock In \emph{Proceedings of the 9th ACM SIGPLAN-SIGACT symposium on
+  Principles of programming languages}, pages 207--212. ACM, 1982.
+
+\bibitem[De~Moura and Bj{\o}rner(2008)]{de2008z3}
+Leonardo De~Moura and Nikolaj Bj{\o}rner.
+\newblock Z3: An efficient smt solver.
+\newblock In \emph{Tools and Algorithms for the Construction and Analysis of
+  Systems}, pages 337--340. Springer, 2008.
+
+\bibitem[Dutertre and De~Moura(2006)]{dutertre2006yices}
+Bruno Dutertre and Leonardo De~Moura.
+\newblock The yices smt solver.
+\newblock \emph{Tool paper at http://yices. csl. sri. com/tool-paper. pdf},
+  2:\penalty0 2, 2006.
+
+\bibitem[Eisner and Fisman(2006)]{eisner2006practical}
+Cindy Eisner and Dana Fisman.
+\newblock \emph{A Practical Introduction to PSL (Series on Integrated Circuits
+  and Systems)}.
+\newblock Springer-Verlag New York, Inc., Secaucus, NJ, 2006.
+
+\bibitem[Elliott and Hudak(1997)]{ElliottHudak97:Fran}
+Conal Elliott and Paul Hudak.
+\newblock Functional reactive animation.
+\newblock In \emph{International Conference on Functional Programming}, 1997.
+\newblock URL \url{http://conal.net/papers/icfp97/}.
+
+\bibitem[Freeman and Pfenning(1991)]{freeman1991refinement}
+Tim Freeman and Frank Pfenning.
+\newblock \emph{Refinement types for ML}, volume~26.
+\newblock ACM, 1991.
+
+\bibitem[Gentzen(1935)]{gentzen1935untersuchungen}
+Gerhard Gentzen.
+\newblock Untersuchungen {\"u}ber das logische schlie{\ss}en. i.
+\newblock \emph{Mathematische zeitschrift}, 39\penalty0 (1):\penalty0 176--210,
+  1935.
+
+\bibitem[Gerards et~al.(2011)Gerards, Baaij, Kuper, and
+  Kooijman]{gerards2011higher}
+M.~Gerards, C.~Baaij, J.~Kuper, and M.~Kooijman.
+\newblock Higher-order abstraction in hardware descriptions with clash.
+\newblock In \emph{Digital System Design (DSD), 2011 14th Euromicro Conference
+  on}, pages 495--502. IEEE, 2011.
+
+\bibitem[Girard(1971)]{girard1971extension}
+Jean-Yves Girard.
+\newblock Une extension de l’interpretation de g{\"o}del {\`a} l’analyse,
+  et son application {\`a} l’elimination des coupures dans l’analyse et la
+  th{\'e}orie des types, 1971, 1971.
+
+\bibitem[Halbwachs and Raymond(1993)]{halbwachs1993tutorial}
+N.~Halbwachs and P.~Raymond.
+\newblock A tutorial of lustre.
+\newblock \emph{available by anonymous ftp from imag. imag. fr as
+  le/ftp/pub/LUSTRE/tutorial. ps}, 1993.
+
+\bibitem[Halbwachs et~al.(1991)Halbwachs, Caspi, Raymond, and
+  Pilaud]{halbwachs1991synchronous}
+N.~Halbwachs, P.~Caspi, P.~Raymond, and D.~Pilaud.
+\newblock The synchronous data flow programming language lustre.
+\newblock \emph{Proceedings of the IEEE}, 79\penalty0 (9):\penalty0 1305--1320,
+  1991.
+
+\bibitem[Hudak et~al.(2003)Hudak, Courtney, Nilsson, and
+  Peterson]{hudak2003arrows}
+P.~Hudak, A.~Courtney, H.~Nilsson, and J.~Peterson.
+\newblock Arrows, robots, and functional reactive programming.
+\newblock \emph{Advanced Functional Programming}, pages 1949--1949, 2003.
+
+\bibitem[Hughes(2000)]{hughes2000generalising}
+J.~Hughes.
+\newblock Generalising monads to arrows.
+\newblock \emph{Science of computer programming}, 37\penalty0 (1):\penalty0
+  67--111, 2000.
+
+\bibitem[Jones(2003)]{jones2003haskell}
+S.L.P. Jones.
+\newblock \emph{Haskell 98 language and libraries: the revised report}.
+\newblock Cambridge University Press, 2003.
+
+\bibitem[Kernighan et~al.(2009)Kernighan, Ritchie, Lippman, and
+  Lajoie]{kernighan2009c}
+Brian~W Kernighan, Dennis Ritchie, Stanley~B Lippman, and Josee Lajoie.
+\newblock C programming.
+\newblock \emph{Language}, 2009.
+
+\bibitem[Kooijman(2009)]{kooijman2009haskell}
+M.~Kooijman.
+\newblock Haskell as a higher order structural hardware description language.
+\newblock 2009.
+
+\bibitem[Leiserson and Saxe(1981)]{leiserson1981optimizing}
+Charles~E Leiserson and James~B Saxe.
+\newblock Optimizing synchronous systems.
+\newblock In \emph{Foundations of Computer Science, 1981. SFCS'81. 22nd Annual
+  Symposium on}, pages 23--36. IEEE, 1981.
+
+\bibitem[Lipovaca(2011)]{lipovaca2011learn}
+M.~Lipovaca.
+\newblock \emph{Learn You a Haskell for Great Good!: A Beginner's Guide}.
+\newblock No Starch Press, 2011.
+
+\bibitem[McBride(2002)]{mcbride2002faking}
+Conor McBride.
+\newblock Faking it simulating dependent types in haskell.
+\newblock \emph{Journal of functional programming}, 12\penalty0 (4-5):\penalty0
+  375--392, 2002.
+
+\bibitem[Milner(1978)]{milner1978theory}
+Robin Milner.
+\newblock A theory of type polymorphism in programming.
+\newblock \emph{Journal of computer and system sciences}, 17\penalty0
+  (3):\penalty0 348--375, 1978.
+
+\bibitem[Navabi(1997)]{navabi1997vhdl}
+Zainalabedin Navabi.
+\newblock \emph{VHDL: Analysis and modeling of digital systems}.
+\newblock McGraw-Hill, Inc., 1997.
+
+\bibitem[Odersky et~al.(1999)Odersky, Sulzmann, and Wehr]{odersky1999type}
+Martin Odersky, Martin Sulzmann, and Martin Wehr.
+\newblock Type inference with constrained types.
+\newblock \emph{TAPOS}, 5\penalty0 (1):\penalty0 35--55, 1999.
+
+\bibitem[O'Sullivan et~al.(2009)O'Sullivan, Stewart, and Goerzen]{o2009real}
+B.~O'Sullivan, D.B. Stewart, and J.~Goerzen.
+\newblock \emph{Real World Haskell}.
+\newblock O'Reilly Media, 2009.
+
+\bibitem[Paterson(2001)]{paterson2001new}
+R.~Paterson.
+\newblock A new notation for arrows.
+\newblock In \emph{ACM SIGPLAN Notices}, volume~36, pages 229--240. ACM, 2001.
+
+\bibitem[Pierce(2002)]{pierce2002types}
+Benjamin~C Pierce.
+\newblock \emph{Types and programming languages}.
+\newblock The MIT Press, 2002.
+
+\bibitem[Pierce(2005)]{pierce2005advanced}
+Benjamin~C Pierce.
+\newblock \emph{Advanced topics in types and programming languages}.
+\newblock The MIT Press, 2005.
+
+\bibitem[Robinson(1965)]{robinson1965machine}
+John~Alan Robinson.
+\newblock A machine-oriented logic based on the resolution principle.
+\newblock \emph{Journal of the ACM (JACM)}, 12\penalty0 (1):\penalty0 23--41,
+  1965.
+
+\bibitem[Rocheteau et~al.(1994)Rocheteau, Grenoble, and
+  Halbwachs]{rocheteau1994pollux}
+Frederic Rocheteau, Imag-lgi Grenoble, and Nicolas Halbwachs.
+\newblock Pollux: a lustre based hardware design environment.
+\newblock 1994.
+
+\bibitem[Rondon et~al.(2008)Rondon, Kawaguci, and Jhala]{rondon2008liquid}
+Patrick~M Rondon, Ming Kawaguci, and Ranjit Jhala.
+\newblock Liquid types.
+\newblock \emph{ACM SIGPLAN Notices}, 43\penalty0 (6):\penalty0 159--169, 2008.
+
+\bibitem[Sander and Jantsch(2004)]{sander2004system}
+I.~Sander and A.~Jantsch.
+\newblock System modeling and transformational design refinement in forsyde
+  [formal system design].
+\newblock \emph{Computer-Aided Design of Integrated Circuits and Systems, IEEE
+  Transactions on}, 23\penalty0 (1):\penalty0 17--32, 2004.
+
+\bibitem[Sheard and Jones(2002)]{sheard2002template}
+T.~Sheard and S.P. Jones.
+\newblock Template meta-programming for haskell.
+\newblock In \emph{Proceedings of the 2002 ACM SIGPLAN workshop on Haskell},
+  pages 1--16. ACM, 2002.
+
+\bibitem[Thomas and Moorby(2002)]{thomas2002verilog}
+Donald~E Thomas and Philip~R Moorby.
+\newblock \emph{The Verilog{\textregistered} Hardware Description Language},
+  volume~2.
+\newblock Springer, 2002.
+
+\bibitem[Wan and Hudak(2000)]{wan2000functional}
+Z.~Wan and P.~Hudak.
+\newblock Functional reactive programming from first principles.
+\newblock In \emph{ACM SIGPLAN Notices}, volume~35, pages 242--252. ACM, 2000.
+
+\bibitem[Wand(1987)]{wand1987simple}
+Mitchell Wand.
+\newblock A simple algorithm and proof for type inference.
+\newblock \emph{Fundamenta Informaticae}, 10\penalty0 (2):\penalty0 115--121,
+  1987.
+
+\end{thebibliography}

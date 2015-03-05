@@ -1,0 +1,2 @@
+\contentsline {todo}{ref}{43}{section*.114}
+\contentsline {todo}{In het volgende hoofdstuk ga ik in op hoe een functie een sequence kan accepteren dmv syntactic sugar. Omdat we weten hoeveel elementen er in een sequence zitten kunnen we van een functie als f <x,y,z> = z , f x y z = z maken. Omdat (toevallig!) in de typing rules geen rekening wordt gehouden met variabelen die niet gebruikt worden kan automatisch ook de juiste constraints op x,y,z worden afgeleid!}{47}{section*.126}

@@ -1,0 +1,78 @@
+\contentsline {chapter}{Abstract}{i}{chapter*.1}
+\contentsline {chapter}{Acknowledgements}{iii}{chapter*.2}
+\contentsline {chapter}{Contents}{v}{section*.3}
+\contentsline {chapter}{\chapternumberline {1}Introduction}{1}{chapter.4}
+\contentsline {section}{\numberline {1.1}Scope}{3}{section.5}
+\contentsline {section}{\numberline {1.2}Thesis Structure}{4}{section.10}
+\contentsline {chapter}{\chapternumberline {2}Background}{5}{chapter.11}
+\contentsline {section}{\numberline {2.1}The untyped $\lambda $-calculus}{5}{section.12}
+\contentsline {section}{\numberline {2.2}Simply-typed $\lambda $-calculus}{7}{section.16}
+\contentsline {subsection}{Typing rules}{8}{section*.18}
+\contentsline {section}{\numberline {2.3}Polymorphic $\lambda $-calculus}{10}{section.20}
+\contentsline {subsection}{Principal Types}{10}{section*.21}
+\contentsline {subsection}{Type-checking using Polytypes}{13}{section*.29}
+\contentsline {section}{\numberline {2.4}Conclusion}{15}{section.31}
+\contentsline {chapter}{\chapternumberline {3}Specification of Time-dependent Behaviour}{17}{chapter.32}
+\contentsline {section}{\numberline {3.1}Specification of Combinational Logic}{18}{section.33}
+\contentsline {subsection}{Types in \gls {clash}}{19}{section*.37}
+\contentsline {subsubsection}{Polymorphism}{21}{section*.44}
+\contentsline {subsection}{Combinational Logic and Time}{23}{section*.52}
+\contentsline {section}{\numberline {3.2}Specification of Sequential Logic}{24}{section.54}
+\contentsline {subsection}{Individual Memory Elements}{25}{section*.58}
+\contentsline {subsection}{Pipelining}{28}{section*.65}
+\contentsline {subsection}{Type Reconstruction}{30}{section*.72}
+\contentsline {subsection}{Sequencing}{32}{section*.81}
+\contentsline {section}{\numberline {3.3}Conclusion}{34}{section.89}
+\contentsline {chapter}{\chapternumberline {4}A Temporal Type System}{37}{chapter.90}
+\contentsline {section}{\numberline {4.1}Grammar of $\lambda _t$}{37}{section.91}
+\contentsline {section}{\numberline {4.2}Constraints}{39}{section.95}
+\contentsline {section}{\numberline {4.3}Typing Rules}{42}{section.98}
+\contentsline {subsection}{The Typing Rules TT-Var, TT-Const \& TT-Gen}{43}{section*.100}
+\contentsline {subsection}{The Typing Rule TT-Abs}{44}{section*.102}
+\contentsline {subsection}{The Typing Rule TT-Delta}{45}{section*.106}
+\contentsline {subsection}{The Typing Rule TT-App}{45}{section*.108}
+\contentsline {subsection}{Other Derivations}{46}{section*.110}
+\contentsline {section}{\numberline {4.4}Solving Constraints}{47}{section.111}
+\contentsline {section}{\numberline {4.5}Sequences}{48}{section.114}
+\contentsline {section}{\numberline {4.6}Conclusion}{49}{section.118}
+\contentsline {chapter}{\chapternumberline {5}Implementation}{51}{chapter.119}
+\contentsline {section}{\numberline {5.1}Introduction}{51}{section.120}
+\contentsline {section}{\numberline {5.2}The Grammar}{53}{section.123}
+\contentsline {subsection}{Implementation of Types}{54}{section*.128}
+\contentsline {section}{\numberline {5.3}Constraint Generation}{56}{section.136}
+\contentsline {subsection}{Example of Constraint Generation}{62}{section*.148}
+\contentsline {section}{\numberline {5.4}Unification}{64}{section.154}
+\contentsline {subsection}{Example of Unification}{68}{section*.160}
+\contentsline {section}{\numberline {5.5}Checking Time Constraints}{69}{section.164}
+\contentsline {section}{\numberline {5.6}Conclusion}{72}{section.170}
+\contentsline {chapter}{\chapternumberline {6}Conclusion}{73}{chapter.171}
+\contentsline {chapter}{\chapternumberline {7}Future Work}{75}{chapter.172}
+\contentsline {subsection}{Solving Constraints Without \gls {smt}-solvers}{75}{section*.173}
+\contentsline {subsection}{Different Approach to Expressing Time in a Type System}{76}{section*.174}
+\contentsline {subsection}{Let-bindings \& Polymorphism}{76}{section*.175}
+\contentsline {subsection}{Feedback}{77}{section*.177}
+\contentsline {subsection}{Multiple Clock Domains}{78}{section*.181}
+\contentsline {subsection}{User defined Constraints}{78}{section*.182}
+\contentsline {subsection}{Inferred Register Placement}{78}{section*.183}
+\contentsline {subsection}{Multiple Time Variables}{79}{section*.184}
+\vspace {2em}
+\contentsline {appendix}{\chapternumberline {A}Language Comparison}{81}{appendix.185}
+\contentsline {section}{\numberline {A.1}C$\lambda $aSH}{81}{section.186}
+\contentsline {subsection}{Language basics}{82}{section*.187}
+\contentsline {subsection}{State representation}{86}{section*.197}
+\contentsline {subsection}{High-level Description}{88}{section*.203}
+\contentsline {section}{\numberline {A.2}Lustre}{90}{section.211}
+\contentsline {subsection}{Data representation}{90}{section*.212}
+\contentsline {subsection}{Temporal operators}{91}{section*.215}
+\contentsline {subsection}{Program structure}{92}{section*.221}
+\contentsline {subsection}{Arrays and recursion}{94}{section*.228}
+\contentsline {subsection}{Comparison of C$\lambda $aSH and Lustre}{95}{section*.232}
+\contentsline {section}{\numberline {A.3}ForSyDe}{97}{section.236}
+\contentsline {subsection}{Processes}{98}{section*.237}
+\contentsline {subsection}{Deep and shallow embedding}{100}{section*.242}
+\contentsline {subsection}{Program structure}{100}{section*.243}
+\contentsline {subsection}{Arrays and Vectors}{101}{section*.244}
+\contentsline {subsection}{Comparison of C$\lambda $aSH and ForSyDe}{101}{section*.245}
+\contentsline {section}{\numberline {A.4}Conclusion}{104}{section.251}
+\vspace {2em}
+\contentsline {chapter}{Bibliography}{107}{section*.253}

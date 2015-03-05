@@ -1,0 +1,49 @@
+\chapter{Conclusion}
+This thesis has produced two tangible results. 
+A type system has been created, which can express limited forms of time-dependent behaviour.
+A slightly different implementation has been created, showing the practical feasibility of the type system.
+
+We have seen that the created type system is limited; we can only express pipelining and sequences.
+Despite the fact that it is limited, it at least shows that certain time-dependent behavior can be expressed as part of the type system.
+Specification of such behaviour using the type system has proven to be pleasant, albeit slightly counterintuitive at times.
+The function type shows the type of data, as well as when the data is expected.
+By only specifying time as part of the type system, the time-dependent behaviour is known directly when the type signature is inspected.
+This is a boon to documentation; instead of inspecting what the function does (temporally speaking) from the statements used to create the function, the behaviour is directly shown in its type.
+
+Compositions have the ability to add memory elements.
+This can be considered a side-effect of function composition, and is a mixed blessing.
+Even though it is useful in creating compositions under the assumption that values are referentially transparent, the behaviour of compositions can be impredictable.
+We avoided adding the same side effect in usage of higher order functions, by restricting the types of higher order functions to be equivalent.
+ 
+However, more complex behaviour is difficult to add.
+Even for something as simple as sequences, we needed to add additional rules to the type system.
+This makes the type system \textit{hard} to extend.
+Without extending the type system to allow more complex behaviour, it is hard to see how such a type system could be useful for real implementations of hardware.
+The type of behaviour we currently support, namely pipelining and sequences, may not be very error-prone in practice.
+If it is not error-prone and the given type system can not be extended further, then dedicating an entire type system to making it less error-prone would be overkill.
+
+It is also questionable to what degree the type system verifies the behaviour of compositions.
+Often, the primary purpose of a type system is to verify certain behaviour.
+Here, verification is only possible within the extent of the type signatures given by the designer.
+Without any type information, only descriptions of combinational logic are created, making temporal verification superfluous.
+However, the given type system does provide the user with a hands-on tool to express time-dependent constraints.
+While verification is not completely automated, if the user provides the parameters which need to be verified, then at the very least the provided information can be verified.
+This form of verification is different from the type \gls{psl} offers.
+In \gls{psl}, behaviour is verified during simulation, while type systems offer verification during compile-time.
+This in itself is a powerful feature.
+
+As we have not provided a proof of soundness, it is hard to provide a definitive answer as to whether the given type system behaves correctly.
+This is a downside of creating a type system from scratch.
+Unfortunately, we did not expect the type system to be so unintuitive.
+Since the typing rules alone are not enough to determine whether something is well-typed, the context functions are used in is important.
+As the context influences the correctness of a type, it becomes more difficult to reason about the soundness of the given type-system.
+We can not take the correctness of the typing rules in chapter \ref{ch:typesystem} at face value as a result.
+
+On the whole, the usefulness of expressing time appears to be big enough to warrant further investigation.
+Even though the constraint-based approach is not successful in allowing specification of all sorts of hardware, other techniques might be more successfull.
+In this thesis we struggled to both define a type system, while at the same time trying to research how to define time as part of this type system.
+Perhaps existing type systems allow us to more easily research how time-dependent behaviour can be expressed (partly) as part of the type system.
+As a result, direct applications for the presented type system and implementation seem limited.
+Our approach shows that it is feasible to express time as part of the type system, but several difficulties need to be overcome in order to create a true temporal type system.
+
+

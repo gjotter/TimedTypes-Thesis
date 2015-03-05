@@ -1,0 +1,364 @@
+% Set up the document
+\documentclass[a4paper, 11pt,oldfontcommands]{memoir}
+
+\usepackage[pdfpagemode={UseOutlines},bookmarks=true,bookmarksopen=true,
+   bookmarksopenlevel=0,bookmarksnumbered=true,hypertexnames=false,
+   colorlinks,linkcolor={black},citecolor={black},urlcolor={black},
+   pdfstartview={FitV},unicode,breaklinks=true]{hyperref}
+
+% Include any extra LaTeX packages required 
+\usepackage[square, numbers, super, comma, sort&compress]{natbib} 
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{bussproofs}
+\DeclareGraphicsExtensions{.eps}
+\usepackage{tabularx}
+\usepackage{array}
+\let\footruleskip\undefined
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{fix-cm}
+\usepackage{circuitikz}
+\usetikzlibrary{arrows, automata, shadows}
+\usepackage{todonotes}
+\usepackage{paralist}
+\usepackage{amsmath}
+\usepackage{mdwlist}
+\usepackage{polytable}
+\RequirePackage{calc}
+\usepackage{IEEEtrantools}
+\usepackage{txfonts}
+\usepackage[section]{placeins}
+\usepackage[toc,style=list]{glossaries}
+\usepackage{tcolorbox}
+
+\DisemulatePackage{setspace}
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.0ex plus0.5ex minus0.2ex}
+\setstretch{1.35}  
+
+\usepackage{etoolbox}
+\AtBeginEnvironment{tabular}{\singlespacing}
+
+\usepackage{vmargin}
+\setmarginsrb           { 1.5in}  % left margin
+                        { 0.6in}  % top margin
+                        { 1.0in}  % right margin
+                        { 0.8in}  % bottom margin
+                        {  20pt}  % head height
+                        {0.25in}  % head sep
+                        {   9pt}  % foot height
+                        { 0.3in}  % foot sep
+
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+
+\chapterstyle{bianchi}
+
+%shorthands for style
+\newcommand{\ttf}[1] {\texttt{#1}}
+\newcommand{\tif}[1] {\textit{#1}}
+\newcommand{\tbf}[1] {\textbf{#1}}
+
+\tcbuselibrary{listings}
+\tcbuselibrary{skins}
+\newcounter{texexp}
+\newcounter{mydef}
+\newcounter{myexp}
+
+\tcbset{
+%
+% Code Snippet
+%
+texexp/.style={%colback=red!50!yellow!5!white,
+colframe=black!85,
+colback=white,%gray!1,
+enhanced,
+colbacktitle=gray!33,
+coltitle=black,
+%listing options={language=haskell,columns=fullflexible,keywordstyle=\color{red},basicstyle=\small},
+%fonttitle=\small\sffamily\bfseries, 
+%fontupper=\small, fontlower=\small, 
+fonttitle=\small,
+arc=4mm,
+outer arc=2.5mm,
+%toptitle=1mm,
+%bottomtitle=1mm,
+left=0mm,right=0mm,top=0mm,bottom=0mm,
+lefttitle=5mm,
+leftrule=0mm,%0.75mm,
+titlerule=0.25mm,
+toprule=0.5mm,%0mm,
+bottomrule=0.5mm, %0.25mm,
+rightrule=0mm},%0.25mm},
+example/.code 2 args={\refstepcounter{texexp}\label{#2}%
+\pgfkeysalso{texexp,title={\textbf{Code Snippet \thetexexp:} #1}}},
+%
+% Definition
+%
+mydef/.style={%hcolback=red!50!yellow!5!white},
+colframe=black!85,
+colback=white,%gray!1,
+enhanced,
+colbacktitle=gray!33,
+coltitle=black,
+fonttitle=\small,
+toptitle=0.25mm,
+bottomtitle=0.25mm,
+leftrule=0.25mm,%0.75mm,
+titlerule=0.25mm,
+toprule=0.5mm,%0mm,
+bottomrule=0.5mm, %0.25mm,
+rightrule=0.25mm},%0.25mm},
+definition/.code 2 args={\refstepcounter{mydef}\label{#2}%
+\pgfkeysalso{mydef,title={\textbf{Definition \themydef:} #1}}},
+%
+% Expansion
+%
+myexp/.style={%hcolback=red!50!yellow!5!white},
+colframe=black!85,
+colback=white,%gray!1,
+fonttitle=\small,
+%left=0mm,right=0mm,top=0mm,bottom=0mm,
+leftrule=0.75mm,toprule=0mm,bottomrule=0mm,rightrule=0mm},
+expansion/.code 2 args={\refstepcounter{myexp}\label{#2}%
+\pgfkeysalso{myexp}},
+}
+\newenvironment{texexp}[1]{\tcblisting{texexp,#1}}{\endtcblisting}
+%\newenvironment{expansion}[1]{\tcblisting{expansion,#1}}{\endtcblisting}
+\newenvironment{texexptitled}[3][]{\tcblisting{example={#2}{#3},#1}}{\endtcblisting}
+\newenvironment{definitiontitled}[3][]{\tcblisting{definition={#2}{#3},#1}}{\endtcblisting}
+\newenvironment{expansiontitled}[3][]{\tcblisting{expansion={#2}{#3},#1}}{\endtcblisting}
+\newenvironment{expansionno}[1]{\tcblisting{expansion,#1}}{\endtcblisting}
+%glossary
+\input{./glossary.tex}
+
+\hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
+
+%So that todonotes do not overflow in the margins
+\setlength{\marginparwidth}{2cm}
+
+\makeheadrule{headings}{\textwidth}{\normalrulethickness}		% Add a rule on each normal page (no chapter)
+\makefootrule{headings}{\textwidth}{\normalrulethickness}{0ex}
+\makeevenfoot{headings}{\thepage}{}{}						% Add page numbers in the footers (outer edges)
+\makeoddfoot{headings}{}{}{\thepage}
+\makeevenhead{headings}{\leftmark}{}{}						% Add chapter and section marks (outer edges)
+\makeoddhead{headings}{}{}{\rightmark}
+
+\usepackage[sc]{mathpazo} % use mathpazo for math fonts
+\usepackage{tgpagella} % but use tgpagella as main font
+\usepackage[T1]{fontenc}
+
+\normalfont
+
+\newlength\drop
+%% ----------------------------------------------------------------
+\begin{document}
+
+\makeatletter
+\newsavebox{\@brx}
+\newcommand{\llangle}[1][]{\savebox{\@brx}{\(\m@th{#1\langle}\)}%
+  \mathopen{\copy\@brx\kern-0.5\wd\@brx\usebox{\@brx}}}
+\newcommand{\rrangle}[1][]{\savebox{\@brx}{\(\m@th{#1\rangle}\)}%
+  \mathclose{\copy\@brx\kern-0.5\wd\@brx\usebox{\@brx}}}
+\makeatother
+
+%\title{MEANDERINGS}
+\begin{titlingpage}
+  \begin{center}
+    \textsc{Master's thesis} \\
+    \vspace{0.5cm}
+    \rule{\textwidth}{1pt} \\
+    \vspace{0.5cm}
+    \LARGE \textsc{Timed Types for Synchronous Hardware} \\
+    \vspace{0.5cm}
+    \large \textsc{Expressing Temporal Behaviour through the Type System of a\\Functional Language} \\
+    \vspace{0.5cm} 
+    \rule{\textwidth}{1pt} \\
+    \vspace{7cm}
+  \end{center} 
+  \emph{Author:}\\ 
+  Gerald Otter \\
+  \newline
+  \emph{Committee:}\\ 
+  Dr. Ir. Jan Kuper\\
+  Ir. Christiaan Baaij\\
+  Dr. Ir. Philip H\"olzenspies\\
+  Ir. Bert Molenkamp\\
+
+  \begin{center}
+    \vfill
+    Computer Architecture for Embedded System (CAES)\\
+    Faculty of EEMCS\\
+    University of Twente\\
+    \vspace{1cm}
+    \today
+  \end{center} 
+%\drop = 0.1\textheight
+%%\vspace*{\baselineskip}
+%\vfill
+%\hbox{%
+%\hspace*{0.05\textwidth}%
+%\rule{1pt}{\dimexpr\textheight-28pt\relax}%
+%\hspace*{0.05\textwidth}%
+%\parbox[b]{0.80\textwidth}{
+%\vbox{%
+%\vspace{\drop}
+%{\noindent\HUGE\bfseries Timed Types}\\[2\baselineskip]
+%{\Large\itshape Expressing Timing Constraints through the Type System of a Functional Language}\\[.37\baselineskip]
+%{\Large Gerald Otter}\par
+%\vspace{0.5\textheight}
+%{\noindent Committee:}\\
+%{\noindent Dr. Ir. Jan Kuper}\\
+%{\noindent Ir. Bert Molenkamp}\\
+%{\noindent \begin{center} \today \end{center}}
+%}% end of vbox
+%}% end of parbox
+%}% end of hbox
+%\vfill
+%\null
+\end{titlingpage}
+
+\newcommand*{\pretoctitle}[1]{{\clearpage\centering
+   \vspace*{-\topfiddle}#1\par}}
+
+\frontmatter	  % Begin Roman style (i, ii, iii, iv...) page numbering 
+% Set up the Title Page 
+%\title{}
+%\author{G.J. Otter}
+
+%\begin{center}
+%\begin{tcolorbox}[enhanced,toprule=0mm,bottomrule=0mm,arc=4mm,outer arc=2.5mm,lowerbox=ignored,colback=white]
+%{ \huge $\textsc{C\lambdaaSH_\tau}$ }
+%\end{tcolorbox}
+%\end{center}
+
+\cleardoublepage
+\chapter{Abstract}
+As shown through the development of the functional hardware description language \gls{clash}, functional languages are well suited to describe synchronous hardware.
+Functional languages allow creation of extensive type systems.
+The type systems of functional languages can be used to verify vastly different properties of expressions.
+Even though \gls{clash} is not the first functional hardware description language, none of the existing functional hardware description languages conscript the aid of the type system to verify properties specific to hardware designs.
+Even though hardware description languages allow verification of certain properties during simulation, static analysis through the type system is only performed similarly to general purpose languages.
+
+In this thesis, a type system is developed which allows verification of temporal properties of synchronous hardware specifications.
+Aside from providing a formal definition of the type system through typing rules and grammar, an implementation is discussed which shows the practical feasibility of expressing temporal behaviour through the type system.
+We show that descriptions of temporal behaviour through the type system leads to concise specifications, where the computational aspect of hardware definitions is separated from the temporal aspect.
+We provide an analysis of the constraint-based approach used to create the type system, and determine what the pitfalls are when trying to include time in the type system. 
+
+From the provided analysis we conclude that expressing time as part of the type system certainly has its advantages.
+Specifications including time-dependent behaviour can be made more concise, though it does come at a cost of some impredictability when creating compositions.
+However, the constraint-based type system discussed is not ideal for reasoning about the properties of time-dependent specifications, and is difficult to extend.
+As a result, more research is definitely needed in order to more completely asses the possibility of expressing time through the type system.
+
+\cleardoublepage
+\chapter{Acknowledgements}
+This thesis would not have been possible without the help of many.
+Foremost I would like to thank my first supervisor Jan Kuper.
+Aside from ample constructive criticism with regards to the content of this thesis, he has been paramount in guiding me through the forest of newly aquired knowledge.
+Not only that, he has also generously given me personal advice when I needed it, even it was not always what I wanted to hear.
+ 
+I would also like to thank Christiaan Baaij.
+Christiaan has diligently read most of the texts I have produced over the past six months, which were admittedly difficult to interpret most of the time.
+Without his help, even when disregarding \gls{clash}'s existence, this thesis would not be what it is today.
+His experience with code generation and hardware synthesis has provided me with the necessary criticism to relate my ideas to practice.
+Without his capacity to point out errors in logic and reasoning, the text before you would certainly be more difficult to decipher.
+
+I feel lucky to have had Philip H\"olzenspies join in providing me with criticism during the final stretch of writing this thesis.
+Without his help and strong criticism, the type system might not have existed at all, let alone in its current incarnation.
+His advice showed me the value of my work, regardless of its results.
+
+Over the past ten years, many fellow students have influenced the way I see the world and react to it.
+In particular I would like to thank Mark de Ruiter, for the interesting conversations we had, even though we perhaps should have been working on our theses instead.
+In that same vein, I would like to thank the people of the CAES group, for providing a fun and relaxed working environment, although I could have used a less relaxed environment at times.
+I also thank my good friends from across the globe for their continuing support. 
+
+Finally, I thank my immediate family. 
+Thank you for supporting me, regardless of the goals I set for myself.
+Thank you, my dearest mother and brother, and despite everything, my loving father.
+
+\cleardoublepage
+%% ----------------------------------------------------------------
+
+% Define the page headers using the FancyHdr package and set up for one-sided printing
+\fancyhead{}  % Clears all page headers and footers
+\rhead{\thepage}  % Sets the right side header to show the page number
+\lhead{}  % Clears the left side page header
+
+%\pagestyle{fancy}  % Finally, use the "fancy" page style to implement the FancyHdr headers
+%% ----------------------------------------------------------------
+\tableofcontents  % Write out the Table of Contents
+\cleardoublepage
+%% ----------------------------------------------------------------
+%\todototoc
+%\listoftodos
+%\cleardoublepage
+%% ----------------------------------------------------------------
+%\listoffigures  % Write out the List of Figures
+%\cleardoublepage
+%% ----------------------------------------------------------------
+%\listofsources
+%\cleardoublepage
+%% ----------------------------------------------------------------
+
+%\lhead{\emph{Acronyms}}  % Set the left side page header to "Abbreviations"
+
+%\printglossaries
+
+%% ---------------------------------------------------------------- 
+\mainmatter	  % Begin normal, numeric (1,2,3...) page numbering
+
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+%\renewcommand{\sectionmark}[1]{\markright{#1}{}}
+%
+%\fancyhead[LE, RO]{\slshape \thepage} 
+%\fancyhead[LO]{\thesection.  \slshape  \rightmark}
+%\fancyhead[RE]{Chapter \thechapter. \slshape \leftmark}
+
+\input{./chapters/introduction.lhs}
+\input{./chapters/background.lhs}
+\input{./chapters/syntax.lhs}
+\input{./chapters/formalization}
+\input{./chapters/implementation.lhs}
+\input{./chapters/conclusion}
+\input{./chapters/discussion.lhs}
+
+\clearpage 
+%% ----------------------------------------------------------------
+
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+
+\appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
+
+\lhead[\slshape \thepage]{Appendix \thechapter. \slshape \leftmark}
+%\rhead[Appendix \thechapter. \slshape \leftmark]{\slshape \thepage}
+\input{./chapters/existinglang.lhs}
+%\input{./appendices/experimentSetup}
+
+\addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
+\backmatter
+
+%% ----------------------------------------------------------------
+\label{Bibliography}
+\lhead[\slshape \thepage]{\slshape Bibliography}  % Change the left  side page header to "Bibliography"
+\rhead[\slshape Bibliography]{\slshape \thepage}  % Change the right side page header to "Bibliography"
+\bibliographystyle{plainnat}
+
+\bibliography{chronologic}
+\clearpage
+
+\end{document}  % The End
+%% ----------------------------------------------------------------
+

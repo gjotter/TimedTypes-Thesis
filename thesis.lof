@@ -1,0 +1,18 @@
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces A specific multiply and add}}{19}{figure.68}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Adding temporally shifted values}}{21}{figure.75}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Temporal perspective of adding temporally shifted values}}{21}{figure.76}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Temporal mapping of a fast clock to a slow clock}}{23}{figure.83}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Temporal mapping of a slow clock to a fast clock}}{24}{figure.86}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Temporal perspective of feedback}}{26}{figure.93}
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Serial composition}}{30}{figure.109}
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Parallel composition with interaction}}{30}{figure.112}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {A.1}{\ignorespaces A simple combinational circuit}}{36}{figure.125}
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Structural interpretation of \texttt {map}}}{41}{figure.143}
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Structural interpretation of \texttt {fold}}}{41}{figure.144}
+\contentsline {figure}{\numberline {A.4}{\ignorespaces Structural interpretation of \texttt {zipWith}}}{41}{figure.145}

@@ -1,0 +1,333 @@
+%% ODER: format ==         = "\mathrel{==}"
+%% ODER: format /=         = "\neq "
+%
+%
+\makeatletter
+\@ifundefined{lhs2tex.lhs2tex.sty.read}%
+  {\@namedef{lhs2tex.lhs2tex.sty.read}{}%
+   \newcommand\SkipToFmtEnd{}%
+   \newcommand\EndFmtInput{}%
+   \long\def\SkipToFmtEnd#1\EndFmtInput{}%
+  }\SkipToFmtEnd
+
+\newcommand\ReadOnlyOnce[1]{\@ifundefined{#1}{\@namedef{#1}{}}\SkipToFmtEnd}
+\DeclareFontFamily{OT1}{cmtex}{}
+\DeclareFontShape{OT1}{cmtex}{m}{n}
+  {<5><6><7><8>cmtex8
+   <9>cmtex9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmtex10}{}
+\DeclareFontShape{OT1}{cmtex}{m}{it}
+  {<-> ssub * cmtt/m/it}{}
+\newcommand{\texfamily}{\fontfamily{cmtex}\selectfont}
+\DeclareFontShape{OT1}{cmtt}{bx}{n}
+  {<5><6><7><8>cmtt8
+   <9>cmbtt9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmbtt10}{}
+\DeclareFontShape{OT1}{cmtex}{bx}{n}
+  {<-> ssub * cmtt/bx/n}{}
+\newcommand{\tex}[1]{\text{\texfamily#1}}	% NEU
+
+\newcommand{\Sp}{\hskip.33334em\relax}
+
+
+\newcommand{\Conid}[1]{\mathit{#1}}
+\newcommand{\Varid}[1]{\mathit{#1}}
+\newcommand{\anonymous}{\kern0.06em \vbox{\hrule\@width.5em}}
+\newcommand{\plus}{\mathbin{+\!\!\!+}}
+\newcommand{\bind}{\mathbin{>\!\!\!>\mkern-6.7mu=}}
+\newcommand{\rbind}{\mathbin{=\mkern-6.7mu<\!\!\!<}}% suggested by Neil Mitchell
+\newcommand{\sequ}{\mathbin{>\!\!\!>}}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+%mathindent has to be defined
+\@ifundefined{mathindent}%
+  {\newdimen\mathindent\mathindent\leftmargini}%
+  {}%
+
+\def\resethooks{%
+  \global\let\SaveRestoreHook\empty
+  \global\let\ColumnHook\empty}
+\newcommand*{\savecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\savecolumns[#1]}}
+\newcommand*{\restorecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\restorecolumns[#1]}}
+\newcommand*{\aligncolumn}[2]%
+  {\g@addto@macro\ColumnHook{\column{#1}{#2}}}
+
+\resethooks
+
+\newcommand{\onelinecommentchars}{\quad-{}- }
+\newcommand{\commentbeginchars}{\enskip\{-}
+\newcommand{\commentendchars}{-\}\enskip}
+
+\newcommand{\visiblecomments}{%
+  \let\onelinecomment=\onelinecommentchars
+  \let\commentbegin=\commentbeginchars
+  \let\commentend=\commentendchars}
+
+\newcommand{\invisiblecomments}{%
+  \let\onelinecomment=\empty
+  \let\commentbegin=\empty
+  \let\commentend=\empty}
+
+\visiblecomments
+
+\newlength{\blanklineskip}
+\setlength{\blanklineskip}{0.66084ex}
+
+\newcommand{\hsindent}[1]{\quad}% default is fixed indentation
+\let\hspre\empty
+\let\hspost\empty
+\newcommand{\NB}{\textbf{NB}}
+\newcommand{\Todo}[1]{$\langle$\textbf{To do:}~#1$\rangle$}
+
+\EndFmtInput
+\makeatother
+%
+%
+%
+%
+%
+%
+% This package provides two environments suitable to take the place
+% of hscode, called "plainhscode" and "arrayhscode". 
+%
+% The plain environment surrounds each code block by vertical space,
+% and it uses \abovedisplayskip and \belowdisplayskip to get spacing
+% similar to formulas. Note that if these dimensions are changed,
+% the spacing around displayed math formulas changes as well.
+% All code is indented using \leftskip.
+%
+% Changed 19.08.2004 to reflect changes in colorcode. Should work with
+% CodeGroup.sty.
+%
+\ReadOnlyOnce{polycode.fmt}%
+\makeatletter
+
+\newcommand{\hsnewpar}[1]%
+  {{\parskip=0pt\parindent=0pt\par\vskip #1\noindent}}
+
+% can be used, for instance, to redefine the code size, by setting the
+% command to \small or something alike
+\newcommand{\hscodestyle}{}
+
+% The command \sethscode can be used to switch the code formatting
+% behaviour by mapping the hscode environment in the subst directive
+% to a new LaTeX environment.
+
+\newcommand{\sethscode}[1]%
+  {\expandafter\let\expandafter\hscode\csname #1\endcsname
+   \expandafter\let\expandafter\endhscode\csname end#1\endcsname}
+
+% "compatibility" mode restores the non-polycode.fmt layout.
+
+\newenvironment{compathscode}%
+  {\par\noindent
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed\)%
+   \par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\compaths}{\sethscode{compathscode}}
+
+% "plain" mode is the proposed default.
+% It should now work with \centering.
+% This required some changes. The old version
+% is still available for reference as oldplainhscode.
+
+\newenvironment{plainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newenvironment{oldplainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+% Here, we make plainhscode the default environment.
+
+\newcommand{\plainhs}{\sethscode{plainhscode}}
+\newcommand{\oldplainhs}{\sethscode{oldplainhscode}}
+\plainhs
+
+% The arrayhscode is like plain, but makes use of polytable's
+% parray environment which disallows page breaks in code blocks.
+
+\newenvironment{arrayhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\parray}%
+  {\endparray\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newcommand{\arrayhs}{\sethscode{arrayhscode}}
+
+% The mathhscode environment also makes use of polytable's parray 
+% environment. It is supposed to be used only inside math mode 
+% (I used it to typeset the type rules in my thesis).
+
+\newenvironment{mathhscode}%
+  {\parray}{\endparray}
+
+\newcommand{\mathhs}{\sethscode{mathhscode}}
+
+% texths is similar to mathhs, but works in text mode.
+
+\newenvironment{texthscode}%
+  {\(\parray}{\endparray\)}
+
+\newcommand{\texths}{\sethscode{texthscode}}
+
+% The framed environment places code in a framed box.
+
+\def\codeframewidth{\arrayrulewidth}
+
+\newenvironment{framedhscode}%
+  {\parskip=\abovedisplayskip\par\noindent
+   \hscodestyle
+   \arrayrulewidth=\codeframewidth
+   \tabular{@{}|p{\linewidth-2\arraycolsep-2\arrayrulewidth-2pt}|@{}}%
+   \hline\framedhslinecorrect\\{-1.5ex}%
+   \let\endoflinesave=\\
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \framedhslinecorrect\endoflinesave{.5ex}\hline
+   \endtabular
+   \parskip=\belowdisplayskip\par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\framedhslinecorrect}[2]%
+  {#1[#2]}
+
+\newcommand{\framedhs}{\sethscode{framedhscode}}
+
+% The inlinehscode environment is an experimental environment
+% that can be used to typeset displayed code inline.
+
+\newenvironment{inlinehscode}%
+  {\(\def\column##1##2{}%
+   \let\>\undefined\let\<\undefined\let\\\undefined
+   \newcommand\>[1][]{}\newcommand\<[1][]{}\newcommand\\[1][]{}%
+   \def\fromto##1##2##3{##3}%
+   \def\nextline{}}{\) }%
+
+\newcommand{\inlinehs}{\sethscode{inlinehscode}}
+
+% The joincode environment is a separate environment that
+% can be used to surround and thereby connect multiple code
+% blocks.
+
+\newenvironment{joincode}%
+  {\let\orighscode=\hscode
+   \let\origendhscode=\endhscode
+   \def\endhscode{\def\hscode{\endgroup\def\@currenvir{hscode}\\}\begingroup}
+   %\let\SaveRestoreHook=\empty
+   %\let\ColumnHook=\empty
+   %\let\resethooks=\empty
+   \orighscode\def\hscode{\endgroup\def\@currenvir{hscode}}}%
+  {\origendhscode
+   \global\let\hscode=\orighscode
+   \global\let\endhscode=\origendhscode}%
+
+\makeatother
+\EndFmtInput
+%
+
+\chapter{Introduction}
+Hardware description languages are used to describe digital logic and electronic circuits.
+Time is a primary attribute of hardware, and as such \glspl{hdl} such as \gls{vhdl}\cite{navabi1997vhdl} and Verilog\cite{thomas2002verilog} have the ability to express behaviour as a function of time.
+Even though \gls{vhdl} and Verilog have the ability to specify behaviour as a function of time, they do \textit{not} have the ability to verify the correctness of specifications which include time-dependent behaviour.
+Verification of \gls{vhdl} code which introduces time-dependent behaviour is done manually via simulation.
+After specification of functionality, the specification is simulated in order to test whether or not the resulting hardware representation behaves as intended by the designer.
+Even though verification through simulation can be automated by languages such as \gls{psl}\cite{eisner2006practical}, verification still solely depends on the input from the designer.
+
+Functional programming languages such as Haskell\cite{jones2003haskell}, ML\cite{milner1978theory} and many others, have traditionally been used in areas where verification is important.
+The functional paradigm uses side-effect free functions, i.e. the result of a function only depends on the argument(s) of the function.
+These functions are called ``pure'' functions. 
+Such functions can be represented using a formal system called the $\lambda$-calculus.
+In pure functions, results may only depend on the argument of a function, without modifying the arguments in the process. 
+Compositions of pure functions are easier to reason about as a result, as functions do not affect each other aside from through their direct argument(s) and result(s).
+In functional languages, the type system is used to reason about the effects of function application and abstraction.
+The type system provides the proof that certain expressions are indeed well-typed, or conversely, provide the proof that certain expressions are not well-typed.
+Expressions which are not well-typed are rejected by the compiler, as correct behaviour cannot be guaranteed.
+
+Functional \glspl{hdl} such as \glslink{clash}{C$\lambda$aSH}\cite{clashchris,kooijman2009haskell}, the \gls{forsyde}\cite{sander2004system} language and Lava\cite{bjesse1998lava} can transform a description in the form of a functional language to hardware, often by first transforming the functional specification to \gls{vhdl}.
+The translation to \gls{vhdl} is made in order to create actual hardware, by using the synthesis tools that already exist for \gls{vhdl}.
+Although creation of hardware directly from functional descriptions is possible, the implementation costs are high enough to warrant usage of an intermediate language such as \gls{vhdl}.
+Unlike traditional \glspl{hdl}, functions are considered values in functional \glspl{hdl}.
+Even though functions do not have straightforward bit-representations, first-class functions are certainly useful in the domain of hardware description, as demonstrated by \gls{clash}, \gls{forsyde} and Lava.
+As functions are values, the type system used in \gls{clash} and other functional \glspl{hdl} also defines the types of functions.
+Since the types of functions and the type of data used by functions is known at compile-time, guarantees can be given about the correctness of expressions in these languages.
+The type system of \gls{clash} allows polymorphism and higher-order functions, which enables increased code-reuse and greater conciseness than traditional \glspl{hdl}.
+
+The most common method to reason about time-dependent behaviour in hardware design is through synchronous hardware design.
+Synchronous hardware uses two elements, namely memory elements and combinational logic.
+The memory elements in a circuit are updated in synchrony according to a clock, making its behaviour time-dependent.
+This contrasts with combinational logic, which has time-independent behaviour.
+The synchronous approach makes it possible to more easily reason about concurrency, as time-dependent behaviour is limited to certain time-frames, called clock cycles.  
+Nevertheless, current mainstream \glspl{hdl} do not support verification of compositions of components which have time-dependent behaviour.
+Synchronous languages, such as Lustre\cite{halbwachs1993tutorial} and Esterel\cite{berry1992esterel}, do support verification of time-dependent compositions.
+However, current synchronous languages do not give the developer insight into how this verification is performed, nor explicitly show the time-dependent behaviour of components in a concise manner.
+This is different for many functional (hardware description) languages, where the type system is often an integral part of the language.
+The type system of Haskell for instance, gives the developer an intuitive interface through which properties of programs are made explicit.
+These properties are then used in the verification process, which determines whether the stated properties of programs actually hold.
+
+In this thesis, we aim to extend the existing functional \gls{hdl} \gls{clash} with verification mechanisms similar to those used in synchronous languages.
+In short, the question permeating through the pages of this thesis is:\newline
+\begin{changemargin}{1cm}{1cm}
+\begin{doublespace}
+\Large ``How can we express time-dependent behaviour of synchronous hardware through the type system.''  
+\end{doublespace}
+\end{changemargin}
+
+To do so, we create a type system which, as opposed to existing synchronous languages, allows us to reason about time-dependent behaviour using the $\lambda$-calculus.
+As naming would suggest, synchronous languages are especially useful for specifying synchronous hardware designs.
+Synchronous hardware design, where memory elements are updated synchronously via a clock, makes it possible to reason about the timing characteristics of hardware components, without needing to take all the physical details (such as the propagation delay) into account.
+\gls{clash} already enables the designer to specify such time-dependent behaviour through specification of sequential logic.
+Memory elements are updated according to a clock, while combinational logic produces results immediately when provided with input(s).
+Even though function application is used in \gls{clash} to compose combinational logic, the same operation cannot be used to compose sequential logic.
+To compose pure functions with stateful functions, a formalism in the Haskell language called ``arrows''\cite{hughes2000generalising} is used\cite{gerards2011higher} in \gls{clash}.
+The use of arrows requires extensive knowledge of functional programming, which is not very common for hardware designers.
+Aside from extending \gls{clash} with verification of time-dependent behaviour, we also introduce an easy to use method to compose sequential logic with combinational logic.
+
+\section{Scope} \label{sec:scope}
+To be able to confidently answer the research question posed in the previous section, we set the following objectives for this research:
+\begin{enumerate}
+ \item  To investigate how time can be represented in the type system from a syntactical point of view.
+ \item  To investigate how temporal effects within a single clock domain can be expressed as part of the type system.
+ \item  Providing formal semantics of the type system through which type soundness may be proven. 
+        Proving type soundness is out of the scope of this thesis however.
+ \item  To develop an implementation, which shows the practical feasibility of expressing time as part of the type system.
+\end{enumerate}
+
+\section{Thesis Structure}
+As part of this thesis a comparison between \gls{clash} and two other languages is conducted, namely Lustre\cite{halbwachs1993tutorial} and \gls{forsyde}\cite{sander2004system}.
+As the comparison has no direct relation to the objectives of this thesis, it is added as an appendix.
+First, various form of the $\lambda$-calculus are discussed first to provide the necessary background information.
+Second, we introduce the syntax of our extension to \gls{clash} through examples, after which we show how the time-dependent behaviour of compositions is inferred by the type system.
+After doing so, we introduce typing rules to formalise the relation between types and expressions of the underlying $\lambda$-calculus.
+Next, the implementation of a prototype implementation of the type system is discussed. 
+This prototype implementation is slightly different from the type system discussed earlier.
+Afterwards we discuss the results of our work in the conclusion, before finally ending with a discussion of future work.
+Finally, we end this thesis with a conclusion.
+

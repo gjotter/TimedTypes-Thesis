@@ -1,0 +1,47 @@
+\contentsline {source}{\numberline {2.1}{\ignorespaces \ensuremath {\mathit {scanl}} in streaming languages}}{9}{source.45}
+\contentsline {source}{\numberline {2.2}{\ignorespaces \ensuremath {\mathit {sum}} in streaming languages}}{10}{source.46}
+\contentsline {source}{\numberline {2.3}{\ignorespaces \ensuremath {\mathit {fifo}} in streaming languages}}{10}{source.47}
+\contentsline {source}{\numberline {4.1}{\ignorespaces A definition for a specific multiply and add}}{20}{source.69}
+\contentsline {source}{\numberline {4.2}{\ignorespaces Introduction of syntactic style for chronological functions}}{22}{source.77}
+\contentsline {source}{\numberline {4.3}{\ignorespaces Register representation using chronological functions}}{22}{source.78}
+\contentsline {source}{\numberline {4.4}{\ignorespaces Mapping a signal with a fast clock to a signal with a slower clock}}{23}{source.82}
+\contentsline {source}{\numberline {4.5}{\ignorespaces Mapping a signal with a fast clock to a signal with a slower clock}}{23}{source.84}
+\contentsline {source}{\numberline {4.6}{\ignorespaces Mismatch in clock frequencies}}{24}{source.87}
+\contentsline {source}{\numberline {4.7}{\ignorespaces Signature for a chronological feedback function}}{25}{source.91}
+\contentsline {source}{\numberline {4.8}{\ignorespaces Chronological function definition of sum using feedback}}{26}{source.94}
+\contentsline {source}{\numberline {4.9}{\ignorespaces Primitive for transforming partially recursive functions}}{26}{source.95}
+\contentsline {source}{\numberline {4.10}{\ignorespaces Total recursive function definition of sum}}{27}{source.96}
+\contentsline {source}{\numberline {4.11}{\ignorespaces Averaging numbers from two streams of values}}{27}{source.98}
+\contentsline {source}{\numberline {4.12}{\ignorespaces Averaging numbers from two streams of values using adts}}{28}{source.99}
+\contentsline {source}{\numberline {4.13}{\ignorespaces Selecting a specific output from \ensuremath {\mathit {Average}}}}{28}{source.100}
+\contentsline {source}{\numberline {4.14}{\ignorespaces A single multiply-accumulate computation}}{28}{source.102}
+\contentsline {source}{\numberline {4.15}{\ignorespaces Using the multiply accumulate function to define a squaring function}}{29}{source.105}
+\contentsline {source}{\numberline {4.16}{\ignorespaces Function composition as in Haskell}}{29}{source.106}
+\contentsline {source}{\numberline {4.17}{\ignorespaces Chronological function composition}}{29}{source.108}
+\contentsline {source}{\numberline {4.18}{\ignorespaces Parallel composition with interaction}}{30}{source.111}
+\contentsline {source}{\numberline {4.19}{\ignorespaces TimeClass definition for choice}}{31}{source.117}
+\contentsline {source}{\numberline {A.1}{\ignorespaces \gls {clash} definition of a simple circuit}}{36}{source.126}
+\contentsline {source}{\numberline {A.2}{\ignorespaces \gls {clash} definition of a simple circuit}}{36}{source.127}
+\contentsline {source}{\numberline {A.3}{\ignorespaces \gls {clash} definition of a simple circuit}}{37}{source.128}
+\contentsline {source}{\numberline {A.4}{\ignorespaces \gls {clash} definition of a simple circuit}}{37}{source.130}
+\contentsline {source}{\numberline {A.5}{\ignorespaces Type signature of a stateful component or function}}{38}{source.133}
+\contentsline {source}{\numberline {A.6}{\ignorespaces Sum as a stateful function in \gls {clash}}}{38}{source.134}
+\contentsline {source}{\numberline {A.7}{\ignorespaces Component type declaration as used in\cite {gerards2011higher}.}}{39}{source.135}
+\contentsline {source}{\numberline {A.8}{\ignorespaces Stateful multiply-accumulate in \gls {clash}}}{39}{source.138}
+\contentsline {source}{\numberline {A.9}{\ignorespaces Composing stateful multiply-accumulate components}}{40}{source.139}
+\contentsline {source}{\numberline {A.10}{\ignorespaces Sum defined over a vector of integers}}{40}{source.142}
+\contentsline {source}{\numberline {A.11}{\ignorespaces The $pre$ operation in Lustre}}{43}{source.150}
+\contentsline {source}{\numberline {A.12}{\ignorespaces The $\to $ operator in Lustre}}{43}{source.151}
+\contentsline {source}{\numberline {A.13}{\ignorespaces The $when$ operator in Lustre}}{43}{source.152}
+\contentsline {source}{\numberline {A.14}{\ignorespaces Node definition in Lustre}}{44}{source.154}
+\contentsline {source}{\numberline {A.15}{\ignorespaces Node reusing in Lustre}}{44}{source.155}
+\contentsline {source}{\numberline {A.16}{\ignorespaces Ripple carry adder in Lustre}}{45}{source.160}
+\contentsline {source}{\numberline {A.17}{\ignorespaces Halting recursion in Lustre}}{46}{source.161}
+\contentsline {source}{\numberline {A.18}{\ignorespaces A sequence of natural numbers in Lustre}}{46}{source.162}
+\contentsline {source}{\numberline {A.19}{\ignorespaces Sum of the last three consecutive values in \gls {clash}}}{47}{source.164}
+\contentsline {source}{\numberline {A.20}{\ignorespaces Sum of the last three consecutive values in Lustre}}{47}{source.165}
+\contentsline {source}{\numberline {A.21}{\ignorespaces Definition of \ensuremath {\mathit {Signal}} in \gls {forsyde}}}{49}{source.168}
+\contentsline {source}{\numberline {A.22}{\ignorespaces The \ensuremath {\mathit {mapSY}} process constructor in \gls {forsyde}}}{49}{source.169}
+\contentsline {source}{\numberline {A.23}{\ignorespaces Stateful Multiply-accumulate in \gls {forsyde}}}{50}{source.170}
+\contentsline {source}{\numberline {A.24}{\ignorespaces mapSY and hdMapSY in \gls {forsyde}}}{53}{source.178}
+\contentsline {source}{\numberline {A.25}{\ignorespaces Definition of hdPlus1 in \gls {forsyde}}}{53}{source.180}

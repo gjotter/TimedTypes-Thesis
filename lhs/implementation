@@ -1,0 +1,23 @@
+%include polycode.fmt 
+%format |-> = "\mapsto"
+%format veca = "\vec a"
+%format vecb = "\vec b"
+%format delay1 ="\sigma_1"
+%format delayx ="\sigma_x"
+%format delay = "\sigma"
+%format Delayx = "\Delta_x"
+%format Delay1 = "\Delta_1"
+%format mylang = "\lambda^{\rightarrow}_{\Delta}"
+%format psin = "\psi. n."
+%format < = "\langle"
+%format > = "\rangle"
+%format *> = ">"
+%format <--> = "\leftrightarrow"
+%format <- = "\leftarrow"
+%format -!> = "\overset{!}{\rightarrow}"
+%format \\ = "\lambda"
+%format <==> = "\leftrightarrow"
+%format <||> = "\langle || \rangle"
+%format par = "\langle || \rangle"
+
+\chapter{Implementation}
